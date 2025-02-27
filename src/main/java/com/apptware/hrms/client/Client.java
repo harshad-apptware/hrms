@@ -24,5 +24,6 @@ public class Client {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
   private String clientName;
+  private String businessHead;
   private String location;
 }

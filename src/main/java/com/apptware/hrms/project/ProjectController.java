@@ -1,10 +1,8 @@
 package com.apptware.hrms.project;
 
-import com.apptware.hrms.client.Client;
-import com.apptware.hrms.model.AddProjectRequest;
+import com.apptware.hrms.model.ProjectRequest;
 import com.apptware.hrms.project.Project.ProjectStatus;
 import java.util.List;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +22,7 @@ public class ProjectController {
   ProjectService projectService;
 
   @PostMapping("/add")
-  ResponseEntity<String> addNewProject(@RequestBody AddProjectRequest projectRequest) {
+  ResponseEntity<String> addNewProject(@RequestBody ProjectRequest projectRequest) {
     String saved = projectService.saveProject(projectRequest);
     return ResponseEntity.ok(saved);
   }

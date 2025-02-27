@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,9 +35,17 @@ public class Project {
   private Client client;
   @Enumerated(EnumType.STRING)
   private ProjectStatus projectStatus;
+  private LocalDate startDate;
+  @Enumerated(EnumType.STRING)
+  private BillingType projectType;
 
   public enum ProjectStatus {
-    ACTIVE,
+    ONGOING,
     COMPLETED
+  }
+
+  public enum BillingType {
+    BILLABLE,
+    NON_BILLABLE
   }
 }

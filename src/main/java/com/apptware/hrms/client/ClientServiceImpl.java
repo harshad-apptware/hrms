@@ -1,6 +1,6 @@
 package com.apptware.hrms.client;
 
-import com.apptware.hrms.model.AddClientRequest;
+import com.apptware.hrms.model.ClientRequest;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +13,13 @@ class ClientServiceImpl implements ClientService {
   ClientRepository clientRepository;
 
   @Override
-  public String saveClient(AddClientRequest clientRequest) {
-    Client newClient = Client.builder().clientName(clientRequest.clientName())
-        .location(clientRequest.location()).build();
+  public String saveClient(ClientRequest clientRequest) {
+    Client newClient =
+        Client.builder()
+            .clientName(clientRequest.clientName())
+            .location(clientRequest.location())
+            .businessHead(clientRequest.businessHead())
+            .build();
     clientRepository.save(newClient);
     return "Client Created.";
   }

@@ -1,5 +1,7 @@
 package com.apptware.hrms.employee;
 
+import com.apptware.hrms.employee.Employee.EmployeeStatus;
+import com.apptware.hrms.employee.EmployeeEngagement.EngagementStatus;
 import com.apptware.hrms.model.EmployeeRequest;
 import com.apptware.hrms.model.ProjectAllotmentRequest;
 import com.apptware.hrms.project.Project;
@@ -42,10 +44,17 @@ class EmployeeServiceImpl implements EmployeeService {
       throw new IllegalArgumentException("Employee already exists.");
     }
 
-    Employee newEmployee = Employee.builder().name(employeeRequest.name())
-        .personalEmail(employeeRequest.personalEmail())
-        .contactNo(employeeRequest.contactNumber()).officeEmail(officeEmail)
-        .dateOfBirth(employeeRequest.dateOfBirth()).build();
+
+    Employee newEmployee =
+        Employee.builder()
+            .officeEmail(officeEmail)
+            .name(employeeRequest.name())
+            .contactNo(employeeRequest.contactNumber())
+            .dateOfBirth(employeeRequest.dateOfBirth())
+            .personalEmail(employeeRequest.personalEmail())
+            .status(EmployeeStatus.NON_BILLABLE)
+            .dateOfJoining(LocalDate.now())
+            .build();
     employeeRepository.save(newEmployee);
 
     return "Employee Saved";
@@ -98,12 +107,23 @@ class EmployeeServiceImpl implements EmployeeService {
     if (optionalEmployee.isPresent() && optionalProject.isPresent()) {
       Employee employee = optionalEmployee.get();
       Project project = optionalProject.get();
-      EmployeeEngagement employeeEngagement = EmployeeEngagement.builder().employee(employee).project(project)
-          .projectJoiningDate(allotmentRequest.projectJoiningDate())
-          .engagementStatus(allotmentRequest.engagementStatus())
-          .allocationPercent(allotmentRequest.allocationPercent())
-          .location(allotmentRequest.workLocation()).build();
+      EmployeeEngagement employeeEngagement =
+          EmployeeEngagement.builder()
+              .employee(employee)
+              .project(project)
+              .projectJoiningDate(allotmentRequest.projectJoiningDate())
+              .engagementStatus(allotmentRequest.engagementStatus())
+              .allocationPercent(allotmentRequest.allocationPercent())
+              .location(allotmentRequest.workLocation())
+              .build();
       engagementRepository.save(employeeEngagement);
+
+      if (EmployeeStatus.NON_BILLABLE.equals(employee.getStatus())
+          && EngagementStatus.DEPLOYED.equals(allotmentRequest.engagementStatus())) {
+        employee.setStatus(EmployeeStatus.BILLABLE);
+        employeeRepository.save(employee);
+      }
+
       return "Project Allocated.";
     } else {
       throw new IllegalArgumentException("Invalid ProjectId or EmployeeId.");

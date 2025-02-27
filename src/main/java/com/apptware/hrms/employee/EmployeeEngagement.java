@@ -2,6 +2,8 @@ package com.apptware.hrms.employee;
 
 import com.apptware.hrms.project.Project;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,6 +35,7 @@ public class EmployeeEngagement {
   @ManyToOne
   @JoinColumn(name = "project_id")
   private Project project;
+  @Enumerated(EnumType.STRING)
   private EngagementStatus engagementStatus;
   private double allocationPercent;
   private LocalDate projectJoiningDate;

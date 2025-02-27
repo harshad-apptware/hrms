@@ -1,11 +1,11 @@
 package com.apptware.hrms.client;
 
-import com.apptware.hrms.model.AddClientRequest;
+import com.apptware.hrms.model.ClientRequest;
 import java.util.List;
 
 interface ClientService {
 
-  String  saveClient(AddClientRequest clientRequest);
+  String  saveClient(ClientRequest clientRequest);
 
   Client fetchClientByName(String name);
 

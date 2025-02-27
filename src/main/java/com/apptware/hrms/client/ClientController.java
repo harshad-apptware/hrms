@@ -1,6 +1,6 @@
 package com.apptware.hrms.client;
 
-import com.apptware.hrms.model.AddClientRequest;
+import com.apptware.hrms.model.ClientRequest;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class ClientController {
   ClientService clientService;
 
   @PostMapping("/add")
-  ResponseEntity<String> addNewClient(@RequestBody AddClientRequest clientRequest) {
+  ResponseEntity<String> addNewClient(@RequestBody ClientRequest clientRequest) {
     String saved = clientService.saveClient(clientRequest);
     return ResponseEntity.ok(saved);
   }
