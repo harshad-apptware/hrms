@@ -8,9 +8,11 @@ import com.apptware.hrms.project.Project;
 import com.apptware.hrms.project.ProjectRepository;
 import com.apptware.hrms.utils.EmailValidator;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,6 +26,15 @@ class EmployeeServiceImpl implements EmployeeService {
 
   @Autowired
   EmployeeEngagementRepository engagementRepository;
+
+  private static final int CACHE_SIZE = 100; // Maximum cache size
+
+  private final Map<String, List<Employee>> employeeCache = Collections.synchronizedMap(new LinkedHashMap<String, List<Employee>>(CACHE_SIZE, 0.75f, true) {
+    @Override
+    protected boolean removeEldestEntry(Map.Entry<String, List<Employee>> eldest) {
+      return size() > CACHE_SIZE;
+    }
+  });
 
   @Override
   public String saveEmployee(EmployeeRequest employeeRequest) {
@@ -44,19 +55,49 @@ class EmployeeServiceImpl implements EmployeeService {
       throw new IllegalArgumentException("Employee already exists.");
     }
 
+    List<EmployeeSkill> primarySkills = new ArrayList<>();
+    for(EmployeeSkill.Skill skill : employeeRequest.primarySkills()) {
+      EmployeeSkill employeeSkill = EmployeeSkill.builder().skill(skill).proficiency(EmployeeSkill.Proficiency.PRIMARY).build();
+      primarySkills.add(employeeSkill);
+    }
+
+    List<EmployeeSkill> secondarySkills = new ArrayList<>();
+    for(EmployeeSkill.Skill skill : employeeRequest.primarySkills()) {
+      EmployeeSkill employeeSkill = EmployeeSkill.builder().skill(skill).proficiency(EmployeeSkill.Proficiency.SECONDARY).build();
+      secondarySkills.add(employeeSkill);
+    }
 
     Employee newEmployee =
-        Employee.builder()
-            .officeEmail(officeEmail)
-            .name(employeeRequest.name())
-            .contactNo(employeeRequest.contactNumber())
-            .dateOfBirth(employeeRequest.dateOfBirth())
-            .personalEmail(employeeRequest.personalEmail())
-            .status(EmployeeStatus.NON_BILLABLE)
-            .dateOfJoining(LocalDate.now())
-            .build();
-    employeeRepository.save(newEmployee);
+            Employee.builder()
+                    .name(employeeRequest.name())
+                    .contactNo(employeeRequest.contactNumber())
+                    .officeEmail(officeEmail)
+                    .personalEmail(employeeRequest.personalEmail())
+                    .dateOfBirth(employeeRequest.dateOfBirth())
+                    .dateOfJoining(LocalDate.now())
+                    .primarySkills(primarySkills)
+                    .secondarySkills(secondarySkills)
+                    .designation(employeeRequest.designation())
+                    .department(employeeRequest.department())
+                    .status(EmployeeStatus.NON_BILLABLE)
+                    .build();
 
+    Employee savedEmployee = employeeRepository.save(newEmployee);
+//    List<EmployeeSkill> primarySkills = new ArrayList<>();
+//    for(EmployeeSkillId.Skill skill: employeeRequest.primarySkills()){
+//      EmployeeSkillId employeeSkillId = EmployeeSkillId.builder().skill(skill).employee(savedEmployee).build();
+//      EmployeeSkill employeeSkill = EmployeeSkill.builder().id(employeeSkillId).proficiencyLevel(EmployeeSkill.Proficiency.PRIMARY).build();
+//      primarySkills.add(employeeSkill);
+//    }
+//    List<EmployeeSkill> secondarySkills = new ArrayList<>();
+//    for(EmployeeSkillId.Skill skill: employeeRequest.primarySkills()){
+//      EmployeeSkillId employeeSkillId = EmployeeSkillId.builder().skill(skill).employee(savedEmployee).build();
+//      EmployeeSkill employeeSkill = EmployeeSkill.builder().id(employeeSkillId).proficiencyLevel(EmployeeSkill.Proficiency.PRIMARY).build();
+//      secondarySkills.add(employeeSkill);
+//    }
+//    savedEmployee.setPrimarySkills(primarySkills);
+//    savedEmployee.setSecondarySkills(secondarySkills);
+//    employeeRepository.save(savedEmployee);
     return "Employee Saved";
   }
 
@@ -155,5 +196,48 @@ class EmployeeServiceImpl implements EmployeeService {
     } else {
       throw new IllegalArgumentException("Invalid ProjectId or EmployeeId.");
     }
+  }
+
+  public List<Employee> searchEmployees(String searchTerm) {
+    // Check if the result is already cached
+    if (employeeCache.containsKey(searchTerm)) {
+      System.out.println("Fetching employees from cache for term: " + searchTerm);
+      return employeeCache.get(searchTerm);
+    }
+
+    List<Employee> employees;
+    String[] names = searchTerm.split(" ");
+
+    if (names.length == 1) {
+      // Search by either first name or last name
+      employees = employeeRepository.findByFirstNameContainingIgnoreCase(searchTerm);
+    } else {
+      // Search by both first name and last name
+      employees = employeeRepository.findByFirstNameAndLastNameContainingIgnoreCase(names[0], names[1]);
+    }
+
+    // Cache the result
+    if(!employees.isEmpty()) {
+      employeeCache.put(searchTerm, employees);
+      System.out.println("Fetching employees from database for term: " + searchTerm);
+
+      System.out.println(employeeCache.size());
+      for (Map.Entry<String, List<Employee>> m : employeeCache.entrySet()) {
+        System.out.println(m.getKey() + " " + m.getValue());
+      }
+    }
+    return employees;
+  }
+
+  @Override
+  public List<Employee> fetchEmployeesBySkills(String skill) {
+      return employeeRepository.listAllEmployeesBySkills(skill);
+  }
+
+  // Method to clear the cache (e.g., on employee updates)
+  // Run Every 10 Days
+  @Scheduled(cron = "0 0 0 */10 * *")
+  public void clearCache() {
+    employeeCache.clear();
   }
 }

@@ -4,8 +4,13 @@ import com.apptware.hrms.model.EmployeeRequest;
 import com.apptware.hrms.model.ProjectAllotmentRequest;
 import com.apptware.hrms.project.Project;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -37,6 +42,26 @@ public class EmployeeController {
     return ResponseEntity.ok(employee);
   }
 
+  @GetMapping("/search")
+  public ResponseEntity<?> searchEmployees( @RequestBody EmployeeNameSearchRecord employeeNameSearchRecord) {
+    String searchTerm = employeeNameSearchRecord.name();
+    if (!searchTerm.isEmpty()) {
+      List<Employee> employees = employeeService.searchEmployees(searchTerm.trim());
+      if (!employees.isEmpty()) {
+        return ResponseEntity.ok(employees);
+      } else {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "No such employee found");
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+      }
+    }
+    else {
+      Map<String, String> errorResponse = new HashMap<>();
+      errorResponse.put("message", "No such employee found");
+      return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+  }
+
   @GetMapping("/byProject")
   ResponseEntity<List<Employee>> getEmployeesOnProject(@RequestParam long projectId) {
     List<Employee> employees = employeeService.fetchAllEmployeesOnProject(projectId);
@@ -54,6 +79,17 @@ public class EmployeeController {
       @RequestParam String engagementStatus) {
     List<Employee> employees =
         employeeService.fetchAllEmployeesByEngagementStatus(engagementStatus);
+    return ResponseEntity.ok(employees);
+  }
+
+  @GetMapping("/bySkills")
+  ResponseEntity<List<Employee>> getEmployeesBySkills(
+          @RequestParam String skill) {
+    List<Employee> employees =
+            employeeService.fetchEmployeesBySkills(skill);
+    if (employees.isEmpty()) {
+      throw new IllegalArgumentException("No Employee found with skill: " + skill);
+    }
     return ResponseEntity.ok(employees);
   }
 

@@ -25,4 +25,8 @@ public interface EmployeeService {
   String updateEmployeeEngagementStatus(long employeeId, long projectId, String status);
 
   String updateEmployeeProjectLeavingDate(long employeeId, long projectId, LocalDate leavingDate);
+
+  List<Employee> searchEmployees(String searchTerm);
+
+  List<Employee> fetchEmployeesBySkills(String skill);
 }
