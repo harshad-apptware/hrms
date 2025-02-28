@@ -225,8 +225,8 @@ class EmployeeServiceImpl implements EmployeeService {
     List<EmployeeResponse> employeeResponseList = new ArrayList<>();
     for(Employee e: employeeList){
       List<EmployeeSkill> skills = e.getSkills();
-      List<Skill> primarySkills = skills.stream().filter(i -> i.getProficiency().equals("PRIMARY")).map(i->i.getSkill()).toList();
-      List<Skill> secondarySkills = skills.stream().filter(i -> i.getProficiency().equals("SECONDARY")).map(i->i.getSkill()).toList();
+      List<Skill> primarySkills = skills.stream().filter(i -> EmployeeSkill.Proficiency.PRIMARY.equals(i.getProficiency())).map(EmployeeSkill::getSkill).toList();
+      List<Skill> secondarySkills = skills.stream().filter(i -> EmployeeSkill.Proficiency.SECONDARY.equals(i.getProficiency())).map(EmployeeSkill::getSkill).toList();
       EmployeeResponse build = EmployeeResponse.builder().id(e.getId()).name(e.getName()).totalYrExp(e.getTotalYrExp()).primarySkills(primarySkills).secondarySkills(secondarySkills).status(e.getStatus()).build();
       employeeResponseList.add(build);
     }
