@@ -134,19 +134,21 @@ class EmployeeServiceImpl implements EmployeeService {
   @Override
   public String allotProjectToEmployee(ProjectAllotmentRequest allotmentRequest) {
     Optional<Employee> optionalEmployee = employeeRepository.findById(allotmentRequest.employeeId());
+    Optional<Employee> optionalReporting = employeeRepository.findById(allotmentRequest.reportingResource());
     Optional<Project> optionalProject = projectRepository.findById(allotmentRequest.projectId());
-    if (optionalEmployee.isPresent() && optionalProject.isPresent()) {
+    if (optionalEmployee.isPresent() && optionalProject.isPresent() && optionalReporting.isPresent()) {
       Employee employee = optionalEmployee.get();
       Project project = optionalProject.get();
       EmployeeEngagement employeeEngagement =
-          EmployeeEngagement.builder()
-              .employee(employee)
-              .project(project)
-              .projectJoiningDate(allotmentRequest.projectJoiningDate())
-              .engagementStatus(allotmentRequest.engagementStatus())
-              .allocationPercent(allotmentRequest.allocationPercent())
-              .location(allotmentRequest.workLocation())
-              .build();
+              EmployeeEngagement.builder()
+                      .employee(employee)
+                      .project(project)
+                      .projectJoiningDate(allotmentRequest.projectJoiningDate())
+                      .engagementStatus(allotmentRequest.engagementStatus())
+                      .allocationPercent(allotmentRequest.allocationPercent())
+                      .location(allotmentRequest.workLocation())
+                      .reportingResource(optionalReporting.get())
+                      .build();
       engagementRepository.save(employeeEngagement);
 
       if (EmployeeStatus.NON_BILLABLE.equals(employee.getStatus())

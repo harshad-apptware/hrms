@@ -4,6 +4,8 @@ import com.apptware.hrms.project.Project;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,8 +34,8 @@ public class EmployeeEngagement {
   @Enumerated(EnumType.STRING)
   private EngagementStatus engagementStatus;
   @OneToOne
-  @JoinColumn(name = "shadow_of")
-  private Employee shadowOf;
+  @JoinColumn(name = "reporting_resource")
+  private Employee reportingResource;
   private LocalDate projectJoiningDate;
   private LocalDate projectLeavingDate;
   private String location;
