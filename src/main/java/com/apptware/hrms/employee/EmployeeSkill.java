@@ -1,42 +1,38 @@
 package com.apptware.hrms.employee;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "employee_skills")
 public class EmployeeSkill {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
+    @JsonBackReference
     private Employee employee;
 
     @Enumerated(EnumType.STRING)
-    private Proficiency proficiency;
-
-    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Skill skill;
 
-    public enum Proficiency{
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Proficiency proficiency;
+
+    public enum Proficiency {
         PRIMARY,
         SECONDARY
     }
-
-    public enum Skill {
-        JAVA,
-        PYTHON,
-        ANGULAR,
-        REACT,
-        DEVOPS
-    }
-
 }
+

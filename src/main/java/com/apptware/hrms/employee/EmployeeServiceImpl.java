@@ -55,18 +55,6 @@ class EmployeeServiceImpl implements EmployeeService {
       throw new IllegalArgumentException("Employee already exists.");
     }
 
-    List<EmployeeSkill> primarySkills = new ArrayList<>();
-    for(EmployeeSkill.Skill skill : employeeRequest.primarySkills()) {
-      EmployeeSkill employeeSkill = EmployeeSkill.builder().skill(skill).proficiency(EmployeeSkill.Proficiency.PRIMARY).build();
-      primarySkills.add(employeeSkill);
-    }
-
-    List<EmployeeSkill> secondarySkills = new ArrayList<>();
-    for(EmployeeSkill.Skill skill : employeeRequest.primarySkills()) {
-      EmployeeSkill employeeSkill = EmployeeSkill.builder().skill(skill).proficiency(EmployeeSkill.Proficiency.SECONDARY).build();
-      secondarySkills.add(employeeSkill);
-    }
-
     Employee newEmployee =
             Employee.builder()
                     .name(employeeRequest.name())
@@ -75,29 +63,31 @@ class EmployeeServiceImpl implements EmployeeService {
                     .personalEmail(employeeRequest.personalEmail())
                     .dateOfBirth(employeeRequest.dateOfBirth())
                     .dateOfJoining(LocalDate.now())
-                    .primarySkills(primarySkills)
-                    .secondarySkills(secondarySkills)
                     .designation(employeeRequest.designation())
                     .department(employeeRequest.department())
+                    .totalYrExp(employeeRequest.totalYrExp())
                     .status(EmployeeStatus.NON_BILLABLE)
                     .build();
 
+    List<EmployeeSkill> skills = new ArrayList<>();
+
+    for (Skill skill : employeeRequest.primarySkills()) {
+      skills.add(EmployeeSkill.builder()
+              .employee(newEmployee)
+              .skill(skill)
+              .proficiency(EmployeeSkill.Proficiency.PRIMARY)
+              .build());
+    }
+
+    for (Skill skill : employeeRequest.secondarySkills()) {
+      skills.add(EmployeeSkill.builder()
+              .employee(newEmployee)
+              .skill(skill)
+              .proficiency(EmployeeSkill.Proficiency.SECONDARY)
+              .build());
+    }
+    newEmployee.setSkills(skills);
     Employee savedEmployee = employeeRepository.save(newEmployee);
-//    List<EmployeeSkill> primarySkills = new ArrayList<>();
-//    for(EmployeeSkillId.Skill skill: employeeRequest.primarySkills()){
-//      EmployeeSkillId employeeSkillId = EmployeeSkillId.builder().skill(skill).employee(savedEmployee).build();
-//      EmployeeSkill employeeSkill = EmployeeSkill.builder().id(employeeSkillId).proficiencyLevel(EmployeeSkill.Proficiency.PRIMARY).build();
-//      primarySkills.add(employeeSkill);
-//    }
-//    List<EmployeeSkill> secondarySkills = new ArrayList<>();
-//    for(EmployeeSkillId.Skill skill: employeeRequest.primarySkills()){
-//      EmployeeSkillId employeeSkillId = EmployeeSkillId.builder().skill(skill).employee(savedEmployee).build();
-//      EmployeeSkill employeeSkill = EmployeeSkill.builder().id(employeeSkillId).proficiencyLevel(EmployeeSkill.Proficiency.PRIMARY).build();
-//      secondarySkills.add(employeeSkill);
-//    }
-//    savedEmployee.setPrimarySkills(primarySkills);
-//    savedEmployee.setSecondarySkills(secondarySkills);
-//    employeeRepository.save(savedEmployee);
     return "Employee Saved";
   }
 
@@ -230,8 +220,17 @@ class EmployeeServiceImpl implements EmployeeService {
   }
 
   @Override
-  public List<Employee> fetchEmployeesBySkills(String skill) {
-      return employeeRepository.listAllEmployeesBySkills(skill);
+  public List<EmployeeResponse> fetchEmployeesBySkills(List<Skill> skill) {
+    List<Employee> employeeList = employeeRepository.findBySkills(skill);
+    List<EmployeeResponse> employeeResponseList = new ArrayList<>();
+    for(Employee e: employeeList){
+      List<EmployeeSkill> skills = e.getSkills();
+      List<Skill> primarySkills = skills.stream().filter(i -> i.getProficiency().equals("PRIMARY")).map(i->i.getSkill()).toList();
+      List<Skill> secondarySkills = skills.stream().filter(i -> i.getProficiency().equals("SECONDARY")).map(i->i.getSkill()).toList();
+      EmployeeResponse build = EmployeeResponse.builder().id(e.getId()).name(e.getName()).totalYrExp(e.getTotalYrExp()).primarySkills(primarySkills).secondarySkills(secondarySkills).status(e.getStatus()).build();
+      employeeResponseList.add(build);
+    }
+    return employeeResponseList;
   }
 
   // Method to clear the cache (e.g., on employee updates)

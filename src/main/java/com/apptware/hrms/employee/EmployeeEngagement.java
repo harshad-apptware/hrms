@@ -32,8 +32,8 @@ public class EmployeeEngagement {
   @Enumerated(EnumType.STRING)
   private EngagementStatus engagementStatus;
   @OneToOne
-  @JoinColumn(name = "reporting_resource_id")
-  private Employee reporting;
+  @JoinColumn(name = "shadow_of")
+  private Employee shadowOf;
   private LocalDate projectJoiningDate;
   private LocalDate projectLeavingDate;
   private String location;

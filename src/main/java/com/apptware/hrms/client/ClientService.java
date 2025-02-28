@@ -12,4 +12,6 @@ interface ClientService {
   Client fetchClientById(long clientId);
 
   List<Client> fetchAllClients();
+
+  String updateClientDetails(Client client);
 }

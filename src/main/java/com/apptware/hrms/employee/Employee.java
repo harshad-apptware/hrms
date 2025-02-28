@@ -1,5 +1,6 @@
 package com.apptware.hrms.employee;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -25,7 +26,7 @@ public class Employee {
   private Long id;
 
   private String name;
-  private long employeeId;
+  private Long employeeId;
   private String contactNo;
   private String officeEmail;
   private String personalEmail;
@@ -39,12 +40,11 @@ public class Employee {
   @Column(columnDefinition = "DATE")
   private LocalDate dateOfLeaving;
 
-  @OneToMany
-  private List<EmployeeSkill> primarySkills;
+  private float totalYrExp;
 
-  @OneToMany
-  private List<EmployeeSkill> secondarySkills;
-
+  @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  private List<EmployeeSkill> skills;
 
   private String designation;
 

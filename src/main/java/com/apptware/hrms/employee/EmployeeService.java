@@ -28,5 +28,5 @@ public interface EmployeeService {
 
   List<Employee> searchEmployees(String searchTerm);
 
-  List<Employee> fetchEmployeesBySkills(String skill);
+  List<EmployeeResponse> fetchEmployeesBySkills(List<Skill> skill);
 }

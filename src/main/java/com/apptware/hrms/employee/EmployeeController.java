@@ -83,14 +83,15 @@ public class EmployeeController {
   }
 
   @GetMapping("/bySkills")
-  ResponseEntity<List<Employee>> getEmployeesBySkills(
-          @RequestParam String skill) {
-    List<Employee> employees =
+  ResponseEntity<?> getEmployeesBySkills(
+          @RequestBody List<Skill> skill) {
+    List<EmployeeResponse> employees =
             employeeService.fetchEmployeesBySkills(skill);
-    if (employees.isEmpty()) {
-      throw new IllegalArgumentException("No Employee found with skill: " + skill);
+
+    if(!employees.isEmpty()){
+      return ResponseEntity.ok(employees);
     }
-    return ResponseEntity.ok(employees);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Employee found with skill");
   }
 
   @GetMapping("/projectsById")
