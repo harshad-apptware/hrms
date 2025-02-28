@@ -10,4 +10,4 @@ public record ProjectAllotmentRequest(
     double allocationPercent,
     LocalDate projectJoiningDate,
     EngagementStatus engagementStatus,
-    long reportingResource) {}
+    Long reportingResource) {}

@@ -134,9 +134,12 @@ class EmployeeServiceImpl implements EmployeeService {
   @Override
   public String allotProjectToEmployee(ProjectAllotmentRequest allotmentRequest) {
     Optional<Employee> optionalEmployee = employeeRepository.findById(allotmentRequest.employeeId());
-    Optional<Employee> optionalReporting = employeeRepository.findById(allotmentRequest.reportingResource());
     Optional<Project> optionalProject = projectRepository.findById(allotmentRequest.projectId());
-    if (optionalEmployee.isPresent() && optionalProject.isPresent() && optionalReporting.isPresent()) {
+
+
+
+
+    if (optionalEmployee.isPresent() && optionalProject.isPresent()) {
       Employee employee = optionalEmployee.get();
       Project project = optionalProject.get();
       EmployeeEngagement employeeEngagement =
@@ -147,8 +150,18 @@ class EmployeeServiceImpl implements EmployeeService {
                       .engagementStatus(allotmentRequest.engagementStatus())
                       .allocationPercent(allotmentRequest.allocationPercent())
                       .location(allotmentRequest.workLocation())
-                      .reportingResource(optionalReporting.get())
                       .build();
+
+      if (Objects.nonNull(allotmentRequest.reportingResource())) {
+        Optional<Employee> optionalReporting = employeeRepository.findById(allotmentRequest.reportingResource());
+        if (optionalReporting.isPresent()) {
+          Employee reportingResource = optionalReporting.get();
+          employeeEngagement.setReportingResource(reportingResource);
+        } else {
+          return "Invalid Reporting Resource.";
+        }
+      }
+
       engagementRepository.save(employeeEngagement);
 
       if (EmployeeStatus.NON_BILLABLE.equals(employee.getStatus())
