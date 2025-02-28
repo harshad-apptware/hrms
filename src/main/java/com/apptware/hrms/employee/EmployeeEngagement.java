@@ -1,15 +1,8 @@
 package com.apptware.hrms.employee;
 
 import com.apptware.hrms.project.Project;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,9 +28,12 @@ public class EmployeeEngagement {
   @ManyToOne
   @JoinColumn(name = "project_id")
   private Project project;
+  private double allocationPercent;
   @Enumerated(EnumType.STRING)
   private EngagementStatus engagementStatus;
-  private double allocationPercent;
+  @OneToOne
+  @JoinColumn(name = "shadow_of")
+  private Employee shadowOf;
   private LocalDate projectJoiningDate;
   private LocalDate projectLeavingDate;
   private String location;

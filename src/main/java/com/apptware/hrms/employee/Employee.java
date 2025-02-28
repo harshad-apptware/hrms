@@ -1,14 +1,11 @@
 package com.apptware.hrms.employee;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +26,7 @@ public class Employee {
   private Long id;
 
   private String name;
+  private Long employeeId;
   private String contactNo;
   private String officeEmail;
   private String personalEmail;
@@ -41,6 +39,12 @@ public class Employee {
 
   @Column(columnDefinition = "DATE")
   private LocalDate dateOfLeaving;
+
+  private float totalYrExp;
+
+  @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonManagedReference
+  private List<EmployeeSkill> skills;
 
   private String designation;
 

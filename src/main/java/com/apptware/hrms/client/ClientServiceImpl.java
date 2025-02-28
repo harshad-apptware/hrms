@@ -44,4 +44,14 @@ class ClientServiceImpl implements ClientService {
   public List<Client> fetchAllClients() {
     return clientRepository.findAll();
   }
+
+  @Override
+  public String updateClientDetails(Client client) {
+    Client newClient = fetchClientById(client.getId());
+    newClient.setClientName(client.getClientName());
+    newClient.setBusinessHead(client.getBusinessHead());
+    newClient.setLocation(client.getLocation());
+    clientRepository.save(newClient);
+    return "Client updated successfully";
+  }
 }

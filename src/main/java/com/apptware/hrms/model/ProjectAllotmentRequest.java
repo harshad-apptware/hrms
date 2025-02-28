@@ -9,4 +9,5 @@ public record ProjectAllotmentRequest(
     String workLocation,
     double allocationPercent,
     LocalDate projectJoiningDate,
-    EngagementStatus engagementStatus) {}
+    EngagementStatus engagementStatus,
+    long reportingResource) {}

@@ -35,4 +35,13 @@ interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
   @Query("SELECT p FROM Project p WHERE p.id IN (SELECT ee.project.id FROM EmployeeEngagement ee WHERE ee.employee.id = :employeeId)")
   List<Project> listAllProjectsByEmployeeId(@Param("employeeId") long employeeId);
+
+//  @Query("SELECT e FROM Employee e WHERE e.primarySkills.skill LIKE %:skill% OR e.secondarySkills.skill LIKE %:skill%")
+//  List<Employee> listAllEmployeesBySkills(@Param("skill") String skill);
+
+  @Query("SELECT DISTINCT e FROM Employee e " +
+          "JOIN e.skills es " +
+          "WHERE es.skill IN :skills")
+  List<Employee> findBySkills(@Param("skills") List<Skill> skills);
+
 }
