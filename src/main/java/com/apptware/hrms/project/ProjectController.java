@@ -15,12 +15,6 @@ public class ProjectController {
   @Autowired
   ProjectService projectService;
 
-  @PostMapping("/add")
-  ResponseEntity<String> addNewProject(@RequestBody ProjectRequest projectRequest) {
-    String saved = projectService.saveProject(projectRequest);
-    return ResponseEntity.ok(saved);
-  }
-
   @GetMapping("/listProjects")
   ResponseEntity<List<Project>> getAllProjects() {
     List<Project> projects = projectService.fetchAllProjects();
@@ -37,6 +31,12 @@ public class ProjectController {
   ResponseEntity<List<Project>> getProjectByClientId(@RequestParam long clientId) {
     List<Project> projects = projectService.fetchProjectsByClientId(clientId);
     return ResponseEntity.ok(projects);
+  }
+
+  @PostMapping("/add")
+  ResponseEntity<String> addNewProject(@RequestBody ProjectRequest projectRequest) {
+    String saved = projectService.saveProject(projectRequest);
+    return ResponseEntity.ok(saved);
   }
 
   @PatchMapping("/{projectId}/updateStatus")

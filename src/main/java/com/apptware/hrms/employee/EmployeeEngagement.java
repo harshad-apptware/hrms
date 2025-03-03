@@ -1,6 +1,7 @@
 package com.apptware.hrms.employee;
 
 import com.apptware.hrms.project.Project;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -33,10 +34,14 @@ public class EmployeeEngagement {
   private double allocationPercent;
   @Enumerated(EnumType.STRING)
   private EngagementStatus engagementStatus;
-  @OneToOne
-  @JoinColumn(name = "reporting_resource")
-  private Employee reportingResource;
+  @ManyToOne
+  @JoinColumn(name = "shadow_of")
+  private EmployeeEngagement shadowOf; // Tracks which engagement this is shadowing
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+  @Column(columnDefinition = "DATE")
   private LocalDate projectJoiningDate;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+  @Column(columnDefinition = "DATE")
   private LocalDate projectLeavingDate;
   private String location;
 

@@ -1,15 +1,9 @@
 package com.apptware.hrms.project;
 
 import com.apptware.hrms.client.Client;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +29,9 @@ public class Project {
   private Client client;
   @Enumerated(EnumType.STRING)
   private ProjectStatus projectStatus;
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+  @Column(columnDefinition = "DATE")
   private LocalDate startDate;
   @Enumerated(EnumType.STRING)
   private BillingType projectType;

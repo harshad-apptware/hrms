@@ -14,19 +14,13 @@ public class ClientController {
   @Autowired
   ClientService clientService;
 
-  @PostMapping("/add")
-  ResponseEntity<String> addNewClient(@RequestBody ClientRequest clientRequest) {
-    String saved = clientService.saveClient(clientRequest);
-    return ResponseEntity.ok(saved);
-  }
-
   @GetMapping("/byId")
-  ResponseEntity<Client> getClientById(@RequestParam long clientId) {
-    Client client = clientService.fetchClientById(clientId);
+  ResponseEntity<Client> getClientById(@RequestParam long id) {
+    Client client = clientService.fetchClientById(id);
     return ResponseEntity.ok(client);
   }
 
-  @GetMapping("/byName")
+  @GetMapping("/byName") //need to check if client not present in DB returning noting and 200OK
   ResponseEntity<Client> getClientByName(@RequestParam String clientName) {
     Client client = clientService.fetchClientByName(clientName);
     return ResponseEntity.ok(client);
@@ -36,6 +30,12 @@ public class ClientController {
   ResponseEntity<List<Client>> getListOfClients() {
     List<Client> clients = clientService.fetchAllClients();
     return ResponseEntity.ok(clients);
+  }
+
+  @PostMapping("/add")
+  ResponseEntity<String> addNewClient(@RequestBody ClientRequest clientRequest) {
+    String saved = clientService.saveClient(clientRequest);
+    return ResponseEntity.ok(saved);
   }
 
   @PutMapping("/update")

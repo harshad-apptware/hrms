@@ -1,4 +1,4 @@
-package com.apptware.hrms.employee;
+package com.apptware.hrms.model;
 
 public record EmployeeNameSearchRecord(String name) {
 }

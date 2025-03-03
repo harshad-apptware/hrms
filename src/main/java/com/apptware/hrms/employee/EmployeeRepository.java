@@ -23,25 +23,25 @@ interface EmployeeRepository extends JpaRepository<Employee, Long> {
   List<Employee> findByFirstNameAndLastNameContainingIgnoreCase(
       @Param("firstName") String firstName, @Param("lastName") String lastName);
 
-  @Query("SELECT e FROM Employee e WHERE e.status = :status")
-  List<Employee> listAllEmployeeByBillingStatus(@Param("status") String status);
+//  @Query("SELECT e FROM Employee e WHERE e.status = :status")
+  List<Employee> findByStatus(Employee.EmployeeStatus status);
 
   @Query(
       "SELECT e FROM Employee e WHERE e.id IN (SELECT ee.employee.id FROM EmployeeEngagement ee WHERE ee.project.id = :projectId)")
   List<Employee> listAllEmployeesByProjectId(@Param("projectId") long projectId);
 
   @Query("SELECT e FROM Employee e WHERE e.id IN (SELECT ee.employee.id FROM EmployeeEngagement ee where ee.engagementStatus = :status)")
-  List<Employee> listAllEmployeesByEngagementStatus(@Param("status") String status);
+  List<Employee> listAllEmployeesByEngagementStatus(@Param("status") EmployeeEngagement.EngagementStatus status);
 
   @Query("SELECT p FROM Project p WHERE p.id IN (SELECT ee.project.id FROM EmployeeEngagement ee WHERE ee.employee.id = :employeeId)")
   List<Project> listAllProjectsByEmployeeId(@Param("employeeId") long employeeId);
 
-//  @Query("SELECT e FROM Employee e WHERE e.primarySkills.skill LIKE %:skill% OR e.secondarySkills.skill LIKE %:skill%")
-//  List<Employee> listAllEmployeesBySkills(@Param("skill") String skill);
-
-  @Query("SELECT DISTINCT e FROM Employee e " +
+  @Query("SELECT e FROM Employee e " +
           "JOIN e.skills es " +
-          "WHERE es.skill IN :skills")
-  List<Employee> findBySkills(@Param("skills") List<Skill> skills);
+          "WHERE es.skill IN :skills " +
+          "GROUP BY e " +
+          "HAVING COUNT(DISTINCT es.skill) = :skillSize")
+  List<Employee> findBySkills(@Param("skills") List<Skill> skills, @Param("skillSize") long skillSize);
+
 
 }

@@ -1,6 +1,7 @@
 package com.apptware.hrms.employee;
 
 import com.apptware.hrms.model.EmployeeRequest;
+import com.apptware.hrms.model.EmployeeResponse;
 import com.apptware.hrms.model.ProjectAllotmentRequest;
 import com.apptware.hrms.project.Project;
 import java.time.LocalDate;
@@ -9,6 +10,8 @@ import java.util.List;
 public interface EmployeeService {
 
   String saveEmployee(EmployeeRequest employeeRequest);
+
+  List<EmployeeResponse> fetchAlLEmployees();
 
   Employee findEmployeeById(long employeeId);
 

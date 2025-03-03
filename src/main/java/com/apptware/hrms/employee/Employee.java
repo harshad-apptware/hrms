@@ -1,5 +1,6 @@
 package com.apptware.hrms.employee;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -31,12 +32,15 @@ public class Employee {
   private String officeEmail;
   private String personalEmail;
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
   @Column(columnDefinition = "DATE")
   private LocalDate dateOfBirth;
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
   @Column(columnDefinition = "DATE")
   private LocalDate dateOfJoining;
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
   @Column(columnDefinition = "DATE")
   private LocalDate dateOfLeaving;
 
@@ -54,9 +58,9 @@ public class Employee {
   @Enumerated(EnumType.STRING)
   private EmployeeStatus status;
 
-  //  @ManyToOne
-  //  @JoinColumn(name = "reporting_manager_id")
-  //  private Employee reportingManager;
+  @ManyToOne
+  @JoinColumn(name = "reporting_manager_id")
+  private Employee reportingManager;
 
   public enum EmployeeStatus {
     BILLABLE,

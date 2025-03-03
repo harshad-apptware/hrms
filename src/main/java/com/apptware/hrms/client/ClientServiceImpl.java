@@ -15,11 +15,14 @@ class ClientServiceImpl implements ClientService {
   @Override
   public String saveClient(ClientRequest clientRequest) {
     Client newClient =
-        Client.builder()
-            .clientName(clientRequest.clientName())
-            .location(clientRequest.location())
-            .businessHead(clientRequest.businessHead())
-            .build();
+            Client.builder()
+                    .clientName(clientRequest.clientName())
+                    .clientContact(clientRequest.clientContact())
+                    .authorizedSignatory(clientRequest.authorizedSignatory())
+                    .clientEmail(clientRequest.clientEmail())
+                    .contactNo(clientRequest.contactNo())
+                    .location(clientRequest.location())
+                    .build();
     clientRepository.save(newClient);
     return "Client Created.";
   }
@@ -49,7 +52,10 @@ class ClientServiceImpl implements ClientService {
   public String updateClientDetails(Client client) {
     Client newClient = fetchClientById(client.getId());
     newClient.setClientName(client.getClientName());
-    newClient.setBusinessHead(client.getBusinessHead());
+    newClient.setClientContact(client.getClientContact());
+    newClient.setAuthorizedSignatory(client.getAuthorizedSignatory());
+    newClient.setClientEmail(client.getClientEmail());
+    newClient.setContactNo(client.getContactNo());
     newClient.setLocation(client.getLocation());
     clientRepository.save(newClient);
     return "Client updated successfully";

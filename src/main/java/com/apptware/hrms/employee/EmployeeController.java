@@ -1,10 +1,8 @@
 package com.apptware.hrms.employee;
 
-import com.apptware.hrms.model.EmployeeRequest;
-import com.apptware.hrms.model.ProjectAllotmentRequest;
+import com.apptware.hrms.model.*;
 import com.apptware.hrms.project.Project;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,20 +19,19 @@ public class EmployeeController {
 
   @Autowired EmployeeService employeeService;
 
-  @PostMapping("/add")
-  ResponseEntity<String> saveEmployee(@RequestBody EmployeeRequest employeeRequest) {
-    try {
-      String saved = employeeService.saveEmployee(employeeRequest);
-      return ResponseEntity.ok(saved);
-    } catch (IllegalArgumentException ex) {
-      return ResponseEntity.ok(ex.getMessage());
-    }
+  @GetMapping("/listEmployees")
+  ResponseEntity<List<EmployeeResponse>> getAllEmployees(){
+    return ResponseEntity.ok(employeeService.fetchAlLEmployees());
   }
 
   @GetMapping("/byId")
-  ResponseEntity<Employee> getEmployee(@RequestParam long employeeId) {
-    Employee employee = employeeService.findEmployeeById(employeeId);
-    return ResponseEntity.ok(employee);
+  ResponseEntity<EmployeeResponse> getEmployee(@RequestParam long id) {
+    Employee employee = employeeService.findEmployeeById(id);
+    List<EmployeeSkill> skills = employee.getSkills();
+    List<Skill> primarySkills = skills.stream().filter(i -> EmployeeSkill.Proficiency.PRIMARY.equals(i.getProficiency())).map(EmployeeSkill::getSkill).toList();
+    List<Skill> secondarySkills = skills.stream().filter(i -> EmployeeSkill.Proficiency.SECONDARY.equals(i.getProficiency())).map(EmployeeSkill::getSkill).toList();
+    EmployeeResponse employeeResponse = EmployeeResponse.builder().id(employee.getId()).name(employee.getName()).totalYrExp(employee.getTotalYrExp()).primarySkills(primarySkills).secondarySkills(secondarySkills).status(employee.getStatus()).build();
+    return ResponseEntity.ok(employeeResponse);
   }
 
   @GetMapping("/search")
@@ -71,9 +68,9 @@ public class EmployeeController {
 
   @GetMapping("/byEngagementStatus")
   ResponseEntity<List<Employee>> getEmployeesByEngagementStatus(
-      @RequestParam String engagementStatus) {
+          @RequestParam String engagementStatus) {
     List<Employee> employees =
-        employeeService.fetchAllEmployeesByEngagementStatus(engagementStatus);
+            employeeService.fetchAllEmployeesByEngagementStatus(engagementStatus);
     return ResponseEntity.ok(employees);
   }
 
@@ -86,13 +83,23 @@ public class EmployeeController {
     if(!employees.isEmpty()){
       return ResponseEntity.ok(employees);
     }
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Employee found with skill");
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Employee found with skill");
   }
 
   @GetMapping("/projectsById")
   ResponseEntity<List<Project>> getEmployeeProjects(@RequestParam long employeeId) {
     List<Project> projects = employeeService.fetchProjectsForEmployee(employeeId);
     return ResponseEntity.ok(projects);
+  }
+
+  @PostMapping("/add")
+  ResponseEntity<String> saveEmployee(@RequestBody EmployeeRequest employeeRequest) {
+    try {
+      String saved = employeeService.saveEmployee(employeeRequest);
+      return ResponseEntity.ok(saved);
+    } catch (IllegalArgumentException ex) {
+      return ResponseEntity.ok(ex.getMessage());
+    }
   }
 
   @PostMapping("/assignProject")
@@ -104,19 +111,17 @@ public class EmployeeController {
 
   @PatchMapping("/updateEngagementStatus")
   ResponseEntity<String> updateEngagementStatus(
-      @RequestParam long employeeId, @RequestParam long projectId, @RequestParam String status) {
+          @RequestBody UpdateEngagementStatusRequest request) {
     String engagementStatus =
-        employeeService.updateEmployeeEngagementStatus(employeeId, projectId, status);
+        employeeService.updateEmployeeEngagementStatus(request.employeeId(), request.projectId(), request.status());
     return ResponseEntity.ok(engagementStatus);
   }
 
   @PatchMapping("/updateProjectRelease")
   ResponseEntity<String> updateEmployeeProjectRelease (
-      @RequestParam long employeeId,
-      @RequestParam long projectId,
-      @RequestParam LocalDate leavingDate) {
+      @RequestBody UpdateProjectReleaseRequest request) {
     String status =
-        employeeService.updateEmployeeProjectLeavingDate(employeeId, projectId, leavingDate);
+        employeeService.updateEmployeeProjectLeavingDate(request.employeeId(), request.projectId(), request.leavingDate());
     return ResponseEntity.ok(status);
   }
 }

@@ -3,13 +3,13 @@ package com.apptware.hrms.employee;
 import com.apptware.hrms.employee.Employee.EmployeeStatus;
 import com.apptware.hrms.employee.EmployeeEngagement.EngagementStatus;
 import com.apptware.hrms.model.EmployeeRequest;
+import com.apptware.hrms.model.EmployeeResponse;
 import com.apptware.hrms.model.ProjectAllotmentRequest;
 import com.apptware.hrms.project.Project;
 import com.apptware.hrms.project.ProjectRepository;
 import com.apptware.hrms.utils.EmailValidator;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -69,6 +69,14 @@ class EmployeeServiceImpl implements EmployeeService {
                     .status(EmployeeStatus.NON_BILLABLE)
                     .build();
 
+    if (employeeRequest.reportingManager() != null) {
+      Optional<Employee> reportingManager = employeeRepository.findById(employeeRequest.reportingManager());
+      if (reportingManager.isEmpty()) {
+        throw new IllegalArgumentException("Invalid Reporting Manager Id");
+      }
+      newEmployee.setReportingManager(reportingManager.get());
+    }
+
     List<EmployeeSkill> skills = new ArrayList<>();
 
     for (Skill skill : employeeRequest.primarySkills()) {
@@ -92,6 +100,20 @@ class EmployeeServiceImpl implements EmployeeService {
   }
 
   @Override
+  public List<EmployeeResponse> fetchAlLEmployees() {
+    List<Employee> employeeList = employeeRepository.findAll();
+    List<EmployeeResponse> employeeResponseList = new ArrayList<>();
+    for(Employee e: employeeList){
+      List<EmployeeSkill> skills = e.getSkills();
+      List<Skill> primarySkills = skills.stream().filter(i -> EmployeeSkill.Proficiency.PRIMARY.equals(i.getProficiency())).map(EmployeeSkill::getSkill).toList();
+      List<Skill> secondarySkills = skills.stream().filter(i -> EmployeeSkill.Proficiency.SECONDARY.equals(i.getProficiency())).map(EmployeeSkill::getSkill).toList();
+      EmployeeResponse build = EmployeeResponse.builder().id(e.getId()).name(e.getName()).totalYrExp(e.getTotalYrExp()).primarySkills(primarySkills).secondarySkills(secondarySkills).status(e.getStatus()).build();
+      employeeResponseList.add(build);
+    }
+    return employeeResponseList;
+  }
+
+  @Override
   public Employee findEmployeeById(long employeeId) {
     Optional<Employee> optionalEmployee = employeeRepository.findById(employeeId);
     if (optionalEmployee.isPresent()) {
@@ -103,7 +125,14 @@ class EmployeeServiceImpl implements EmployeeService {
 
   @Override
   public List<Employee> fetchAllEmployeesByBillingStatus(String status) {
-    return employeeRepository.listAllEmployeeByBillingStatus(status);
+    try {
+      EmployeeStatus enumStatus = EmployeeStatus.valueOf(status);
+      return employeeRepository.findByStatus(enumStatus);
+      // Proceed with the query
+    } catch (IllegalArgumentException e) {
+      // Handle the case where statusStr does not match any enum value
+      throw new IllegalArgumentException("Invalid Status: "+ status);
+    }
   }
 
   @Override
@@ -118,7 +147,12 @@ class EmployeeServiceImpl implements EmployeeService {
 
   @Override
   public List<Employee> fetchAllEmployeesByEngagementStatus(String status) {
-    return employeeRepository.listAllEmployeesByEngagementStatus(status);
+    try {
+      EngagementStatus enumStatus = EngagementStatus.valueOf(status);
+      return employeeRepository.listAllEmployeesByEngagementStatus(enumStatus);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("Invalid engagement status: " + status);
+    }
   }
 
   @Override
@@ -136,9 +170,6 @@ class EmployeeServiceImpl implements EmployeeService {
     Optional<Employee> optionalEmployee = employeeRepository.findById(allotmentRequest.employeeId());
     Optional<Project> optionalProject = projectRepository.findById(allotmentRequest.projectId());
 
-
-
-
     if (optionalEmployee.isPresent() && optionalProject.isPresent()) {
       Employee employee = optionalEmployee.get();
       Project project = optionalProject.get();
@@ -153,10 +184,10 @@ class EmployeeServiceImpl implements EmployeeService {
                       .build();
 
       if (Objects.nonNull(allotmentRequest.reportingResource())) {
-        Optional<Employee> optionalReporting = employeeRepository.findById(allotmentRequest.reportingResource());
-        if (optionalReporting.isPresent()) {
-          Employee reportingResource = optionalReporting.get();
-          employeeEngagement.setReportingResource(reportingResource);
+        Optional<EmployeeEngagement> optionalShadow = engagementRepository.findById(allotmentRequest.reportingResource());
+        if (optionalShadow.isPresent()) {
+          EmployeeEngagement reportingResource = optionalShadow.get();
+          employeeEngagement.setShadowOf(reportingResource);
         } else {
           return "Invalid Reporting Resource.";
         }
@@ -224,29 +255,43 @@ class EmployeeServiceImpl implements EmployeeService {
     // Cache the result
     if(!employees.isEmpty()) {
       employeeCache.put(searchTerm, employees);
-      System.out.println("Fetching employees from database for term: " + searchTerm);
-
-      System.out.println(employeeCache.size());
-      for (Map.Entry<String, List<Employee>> m : employeeCache.entrySet()) {
-        System.out.println(m.getKey() + " " + m.getValue());
-      }
     }
     return employees;
   }
 
   @Override
-  public List<EmployeeResponse> fetchEmployeesBySkills(List<Skill> skill) {
-    List<Employee> employeeList = employeeRepository.findBySkills(skill);
+  public List<EmployeeResponse> fetchEmployeesBySkills(List<Skill> skills) {
+    long skillSize = skills.size();  // Number of skills in input
+    List<Employee> employeeList = employeeRepository.findBySkills(skills, skillSize);
     List<EmployeeResponse> employeeResponseList = new ArrayList<>();
-    for(Employee e: employeeList){
-      List<EmployeeSkill> skills = e.getSkills();
-      List<Skill> primarySkills = skills.stream().filter(i -> EmployeeSkill.Proficiency.PRIMARY.equals(i.getProficiency())).map(EmployeeSkill::getSkill).toList();
-      List<Skill> secondarySkills = skills.stream().filter(i -> EmployeeSkill.Proficiency.SECONDARY.equals(i.getProficiency())).map(EmployeeSkill::getSkill).toList();
-      EmployeeResponse build = EmployeeResponse.builder().id(e.getId()).name(e.getName()).totalYrExp(e.getTotalYrExp()).primarySkills(primarySkills).secondarySkills(secondarySkills).status(e.getStatus()).build();
+
+    for (Employee e : employeeList) {
+      List<EmployeeSkill> skillList = e.getSkills();
+      List<Skill> primarySkills = skillList.stream()
+              .filter(i -> EmployeeSkill.Proficiency.PRIMARY.equals(i.getProficiency()))
+              .map(EmployeeSkill::getSkill)
+              .toList();
+
+      List<Skill> secondarySkills = skillList.stream()
+              .filter(i -> EmployeeSkill.Proficiency.SECONDARY.equals(i.getProficiency()))
+              .map(EmployeeSkill::getSkill)
+              .toList();
+
+      EmployeeResponse build = EmployeeResponse.builder()
+              .id(e.getId())
+              .name(e.getName())
+              .totalYrExp(e.getTotalYrExp())
+              .primarySkills(primarySkills)
+              .secondarySkills(secondarySkills)
+              .status(e.getStatus())
+              .build();
+
       employeeResponseList.add(build);
     }
+
     return employeeResponseList;
   }
+
 
   // Method to clear the cache (e.g., on employee updates)
   // Run Every 10 Days

@@ -23,7 +23,10 @@ public class Client {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
-  private String clientName;
-  private String businessHead;
+  private String clientName; // Company Name
+  private String clientContact;
+  private String authorizedSignatory;
+  private String clientEmail;
+  private String contactNo;
   private String location;
 }
