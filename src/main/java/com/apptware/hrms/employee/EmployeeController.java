@@ -28,8 +28,15 @@ public class EmployeeController {
   ResponseEntity<EmployeeResponse> getEmployee(@RequestParam long id) {
     Employee employee = employeeService.findEmployeeById(id);
     List<EmployeeSkill> skills = employee.getSkills();
-    List<Skill> primarySkills = skills.stream().filter(i -> EmployeeSkill.Proficiency.PRIMARY.equals(i.getProficiency())).map(EmployeeSkill::getSkill).toList();
-    List<Skill> secondarySkills = skills.stream().filter(i -> EmployeeSkill.Proficiency.SECONDARY.equals(i.getProficiency())).map(EmployeeSkill::getSkill).toList();
+    List<String> primarySkills = skills.stream()
+            .filter(i -> EmployeeSkill.Proficiency.PRIMARY.equals(i.getProficiency()))
+            .map(i -> i.getSkill().getDescription())
+            .toList();
+
+    List<String> secondarySkills = skills.stream()
+            .filter(i -> EmployeeSkill.Proficiency.SECONDARY.equals(i.getProficiency()))
+            .map(i -> i.getSkill().getDescription())
+            .toList();
     EmployeeResponse employeeResponse = EmployeeResponse.builder().id(employee.getId()).name(employee.getName()).totalYrExp(employee.getTotalYrExp()).primarySkills(primarySkills).secondarySkills(secondarySkills).status(employee.getStatus()).build();
     return ResponseEntity.ok(employeeResponse);
   }

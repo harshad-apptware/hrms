@@ -81,7 +81,8 @@ class EmployeeServiceImpl implements EmployeeService {
 
     List<EmployeeSkill> skills = new ArrayList<>();
 
-    for (Skill skill : employeeRequest.primarySkills()) {
+    for (String skillDescription : employeeRequest.primarySkills()) {
+      Skill skill = Skill.fromDescription(skillDescription);
       skills.add(EmployeeSkill.builder()
               .employee(newEmployee)
               .skill(skill)
@@ -89,7 +90,8 @@ class EmployeeServiceImpl implements EmployeeService {
               .build());
     }
 
-    for (Skill skill : employeeRequest.secondarySkills()) {
+    for (String skillDescription : employeeRequest.secondarySkills()) {
+      Skill skill = Skill.fromDescription(skillDescription);
       skills.add(EmployeeSkill.builder()
               .employee(newEmployee)
               .skill(skill)
@@ -105,11 +107,28 @@ class EmployeeServiceImpl implements EmployeeService {
   public List<EmployeeResponse> fetchAlLEmployees() {
     List<Employee> employeeList = employeeRepository.findAll();
     List<EmployeeResponse> employeeResponseList = new ArrayList<>();
-    for(Employee e: employeeList){
+    for (Employee e : employeeList) {
       List<EmployeeSkill> skills = e.getSkills();
-      List<Skill> primarySkills = skills.stream().filter(i -> EmployeeSkill.Proficiency.PRIMARY.equals(i.getProficiency())).map(EmployeeSkill::getSkill).toList();
-      List<Skill> secondarySkills = skills.stream().filter(i -> EmployeeSkill.Proficiency.SECONDARY.equals(i.getProficiency())).map(EmployeeSkill::getSkill).toList();
-      EmployeeResponse build = EmployeeResponse.builder().id(e.getId()).name(e.getName()).totalYrExp(e.getTotalYrExp()).primarySkills(primarySkills).secondarySkills(secondarySkills).status(e.getStatus()).build();
+
+      List<String> primarySkills = skills.stream()
+              .filter(i -> EmployeeSkill.Proficiency.PRIMARY.equals(i.getProficiency()))
+              .map(i -> i.getSkill().getDescription())
+              .toList();
+
+      List<String> secondarySkills = skills.stream()
+              .filter(i -> EmployeeSkill.Proficiency.SECONDARY.equals(i.getProficiency()))
+              .map(i -> i.getSkill().getDescription())
+              .toList();
+
+      EmployeeResponse build = EmployeeResponse.builder()
+              .id(e.getId())
+              .name(e.getName())
+              .totalYrExp((float) e.getTotalYrExp()) // Assuming totalYrExp is Double in Employee
+              .primarySkills(primarySkills)
+              .secondarySkills(secondarySkills)
+              .status(e.getStatus())
+              .build();
+
       employeeResponseList.add(build);
     }
     return employeeResponseList;
@@ -269,20 +288,21 @@ class EmployeeServiceImpl implements EmployeeService {
 
     for (Employee e : employeeList) {
       List<EmployeeSkill> skillList = e.getSkills();
-      List<Skill> primarySkills = skillList.stream()
+
+      List<String> primarySkills = skillList.stream()
               .filter(i -> EmployeeSkill.Proficiency.PRIMARY.equals(i.getProficiency()))
-              .map(EmployeeSkill::getSkill)
+              .map(i -> i.getSkill().getDescription())
               .toList();
 
-      List<Skill> secondarySkills = skillList.stream()
+      List<String> secondarySkills = skillList.stream()
               .filter(i -> EmployeeSkill.Proficiency.SECONDARY.equals(i.getProficiency()))
-              .map(EmployeeSkill::getSkill)
+              .map(i -> i.getSkill().getDescription())
               .toList();
 
       EmployeeResponse build = EmployeeResponse.builder()
               .id(e.getId())
               .name(e.getName())
-              .totalYrExp(e.getTotalYrExp())
+              .totalYrExp((float) e.getTotalYrExp()) // Assuming totalYrExp is Double in Employee
               .primarySkills(primarySkills)
               .secondarySkills(secondarySkills)
               .status(e.getStatus())
