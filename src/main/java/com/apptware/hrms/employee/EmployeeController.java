@@ -133,4 +133,13 @@ public class EmployeeController {
         employeeService.updateEmployeeProjectLeavingDate(request.employeeId(), request.projectId(), request.leavingDate());
     return ResponseEntity.ok(status);
   }
+
+  @DeleteMapping("/delete")
+  ResponseEntity<String> deleteEmployee(@RequestParam Long id){
+    String message = employeeService.deleteEmployee(id);
+    if(message.equals("Employee deleted")){
+      return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+  }
 }

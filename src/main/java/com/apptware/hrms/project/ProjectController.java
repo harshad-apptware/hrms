@@ -5,6 +5,7 @@ import com.apptware.hrms.project.Project.ProjectStatus;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,5 +47,14 @@ public class ProjectController {
       ProjectStatus status) {
     String projectStatus = projectService.updateProjectStatus(projectId, status);
     return ResponseEntity.ok(projectStatus);
+  }
+
+  @DeleteMapping("/delete")
+  ResponseEntity<String> deleteProject(@RequestParam Long id){
+    String message = projectService.deleteProject(id);
+    if(message.equals("Project deleted")){
+      return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
   }
 }
