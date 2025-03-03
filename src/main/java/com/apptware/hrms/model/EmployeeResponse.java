@@ -11,8 +11,8 @@ public record EmployeeResponse(
         long id,
         String name,
         float totalYrExp,
-        List<Skill> primarySkills,
-        List<Skill> secondarySkills,
+        List<String> primarySkills,
+        List<String> secondarySkills,
         Employee.EmployeeStatus status
 ) {
 }

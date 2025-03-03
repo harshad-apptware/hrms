@@ -21,8 +21,8 @@ public record EmployeeRequest(
         LocalDate dateOfJoining,
         Long employeeId,
         float totalYrExp,
-        List<Skill> primarySkills,
-        List<Skill> secondarySkills,
+        List<String> primarySkills,
+        List<String> secondarySkills,
         String designation,
         Department department,
         Long reportingManager) {}
