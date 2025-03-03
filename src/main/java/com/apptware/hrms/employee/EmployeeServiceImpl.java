@@ -121,7 +121,8 @@ class EmployeeServiceImpl implements EmployeeService {
               .toList();
 
       EmployeeResponse build = EmployeeResponse.builder()
-              .employeId(e.getEmployeeId())
+              .id(e.getId())
+              .employeeId(e.getEmployeeId())
               .name(e.getName())
               .totalYrExp((float) e.getTotalYrExp()) // Assuming totalYrExp is Double in Employee
               .primarySkills(primarySkills)
@@ -302,7 +303,8 @@ class EmployeeServiceImpl implements EmployeeService {
               .toList();
 
       EmployeeResponse build = EmployeeResponse.builder()
-              .employeId(e.getEmployeeId())
+              .id(e.getId())
+              .employeeId(e.getEmployeeId())
               .name(e.getName())
               .totalYrExp((float) e.getTotalYrExp()) // Assuming totalYrExp is Double in Employee
               .primarySkills(primarySkills)
@@ -324,6 +326,50 @@ class EmployeeServiceImpl implements EmployeeService {
       return "Employee deleted";
     }
     return "Employee not found";
+  }
+
+  @Override
+  public String updateEmployee(Long id, EmployeeRequest employeeRequest) {
+    Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+    Optional<Employee> optionalReportingManager = employeeRepository.findById(employeeRequest.reportingManager());
+    if(optionalEmployee.isPresent() && optionalReportingManager.isPresent()){
+      Employee employee = optionalEmployee.get();
+      employee.setName(employeeRequest.name());
+      employee.setContactNo(employeeRequest.contactNumber());
+      employee.setOfficeEmail(employeeRequest.officeEmail());
+      employee.setPersonalEmail(employeeRequest.personalEmail());
+      employee.setDateOfBirth(employeeRequest.dateOfBirth());
+      employee.setDateOfJoining(employeeRequest.dateOfJoining());
+      employee.setEmployeeId(employeeRequest.employeeId());
+      employee.setTotalYrExp(employeeRequest.totalYrExp());
+      employee.setDesignation(employeeRequest.designation());
+      employee.setDepartment(employeeRequest.department());
+      employee.setReportingManager(optionalReportingManager.get());
+
+      List<EmployeeSkill> skills = new ArrayList<>();
+
+      for (String skillDescription : employeeRequest.primarySkills()) {
+        Skill skill = Skill.fromDescription(skillDescription);
+        skills.add(EmployeeSkill.builder()
+                .employee(employee)
+                .skill(skill)
+                .proficiency(EmployeeSkill.Proficiency.PRIMARY)
+                .build());
+      }
+
+      for (String skillDescription : employeeRequest.secondarySkills()) {
+        Skill skill = Skill.fromDescription(skillDescription);
+        skills.add(EmployeeSkill.builder()
+                .employee(employee)
+                .skill(skill)
+                .proficiency(EmployeeSkill.Proficiency.SECONDARY)
+                .build());
+      }
+      employee.setSkills(skills);
+      employeeRepository.save(employee);
+      return "Employee Updated";
+    }
+    return "Employee does not exists";
   }
 
 

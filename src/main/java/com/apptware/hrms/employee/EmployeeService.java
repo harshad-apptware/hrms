@@ -34,4 +34,6 @@ public interface EmployeeService {
   List<EmployeeResponse> fetchEmployeesBySkills(List<Skill> skill);
 
   String deleteEmployee(Long id);
+
+  String updateEmployee(Long id, EmployeeRequest employeeRequest);
 }

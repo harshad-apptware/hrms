@@ -39,7 +39,7 @@ public class EmployeeController {
             .filter(i -> EmployeeSkill.Proficiency.SECONDARY.equals(i.getProficiency()))
             .map(i -> i.getSkill().getDescription())
             .toList();
-    EmployeeResponse employeeResponse = EmployeeResponse.builder().employeId(employee.getId()).name(employee.getName()).totalYrExp(employee.getTotalYrExp()).primarySkills(primarySkills).secondarySkills(secondarySkills).status(employee.getStatus()).build();
+    EmployeeResponse employeeResponse = EmployeeResponse.builder().employeeId(employee.getId()).name(employee.getName()).totalYrExp(employee.getTotalYrExp()).primarySkills(primarySkills).secondarySkills(secondarySkills).status(employee.getStatus()).build();
     return ResponseEntity.ok(employeeResponse);
   }
 
@@ -141,5 +141,14 @@ public class EmployeeController {
       return ResponseEntity.status(HttpStatus.OK).body(message);
     }
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+  }
+
+  @PatchMapping("/update")
+  ResponseEntity<String> updateEmployee(@RequestParam Long id, @RequestBody EmployeeRequest employeeRequest){
+    String message = employeeService.updateEmployee(id, employeeRequest);
+    if(message.equals("Employee Updated")){
+      return ResponseEntity.status(HttpStatus.OK).body("Employee Updated");
+    }
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee doest not exists");
   }
 }

@@ -46,7 +46,7 @@ public class Employee {
 
   private float totalYrExp;
 
-  @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
   @JsonManagedReference
   private List<EmployeeSkill> skills;
 
@@ -58,7 +58,7 @@ public class Employee {
   @Enumerated(EnumType.STRING)
   private EmployeeStatus status;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.REMOVE)
   @JoinColumn(name = "reporting_manager_id")
   private Employee reportingManager;
 

@@ -8,7 +8,8 @@ import java.util.List;
 
 @Builder
 public record EmployeeResponse(
-        long employeId,
+        Long id,
+        long employeeId,
         String name,
         float totalYrExp,
         List<String> primarySkills,
