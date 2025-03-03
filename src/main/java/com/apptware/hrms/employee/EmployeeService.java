@@ -32,4 +32,6 @@ public interface EmployeeService {
   List<Employee> searchEmployees(String searchTerm);
 
   List<EmployeeResponse> fetchEmployeesBySkills(List<Skill> skill);
+
+  String deleteEmployee(Long id);
 }

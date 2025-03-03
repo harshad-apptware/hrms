@@ -2,6 +2,7 @@ package com.apptware.hrms.client;
 
 import com.apptware.hrms.model.ClientRequest;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,5 +60,15 @@ class ClientServiceImpl implements ClientService {
     newClient.setLocation(client.getLocation());
     clientRepository.save(newClient);
     return "Client updated successfully";
+  }
+
+  @Override
+  public String deleteClient(long id) {
+    Optional<Client> optionalClient = clientRepository.findById(id);
+    if(optionalClient.isPresent()){
+      clientRepository.deleteById(id);
+      return "Client deleted";
+    }
+    return "Client not found";
   }
 }

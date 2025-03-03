@@ -314,6 +314,16 @@ class EmployeeServiceImpl implements EmployeeService {
     return employeeResponseList;
   }
 
+  @Override
+  public String deleteEmployee(Long id) {
+    Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+    if(optionalEmployee.isPresent()){
+      employeeRepository.deleteById(id);
+      return "Employee deleted";
+    }
+    return "Employee not found";
+  }
+
 
   // Method to clear the cache (e.g., on employee updates)
   // Run Every 10 Days

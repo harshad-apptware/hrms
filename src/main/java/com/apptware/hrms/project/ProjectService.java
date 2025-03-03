@@ -15,4 +15,6 @@ interface ProjectService {
   String updateProjectStatus(long projectId, ProjectStatus projectStatus);
 
   List<Project> fetchAllProjects();
+
+  String deleteProject(Long id);
 }

@@ -77,4 +77,14 @@ class ProjectServiceImpl implements ProjectService {
   public List<Project> fetchAllProjects() {
     return projectRepository.findAll();
   }
+
+  @Override
+  public String deleteProject(Long id) {
+    Optional<Project> optionalProject = projectRepository.findById(id);
+    if(optionalProject.isPresent()){
+      projectRepository.deleteById(id);
+      return "Project deleted";
+    }
+    return "Project not found";
+  }
 }

@@ -45,4 +45,13 @@ public class ClientController {
     String message = clientService.updateClientDetails(client);
     return ResponseEntity.status(HttpStatus.ACCEPTED).body(message);
   }
+
+  @DeleteMapping("/delete")
+  ResponseEntity<String> deleteClient(@RequestParam Long id){
+    String message = clientService.deleteClient(id);
+    if("Client deleted".equals(message)){
+      return ResponseEntity.status(HttpStatus.OK).body(message);
+    }
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+  }
 }

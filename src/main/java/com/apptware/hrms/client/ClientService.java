@@ -14,4 +14,6 @@ interface ClientService {
   List<Client> fetchAllClients();
 
   String updateClientDetails(Client client);
+
+  String deleteClient(long id);
 }

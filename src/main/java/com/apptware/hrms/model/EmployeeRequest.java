@@ -1,7 +1,6 @@
 package com.apptware.hrms.model;
 
 import com.apptware.hrms.employee.Employee.Department;
-import com.apptware.hrms.employee.Skill;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 
