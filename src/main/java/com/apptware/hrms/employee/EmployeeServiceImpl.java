@@ -62,7 +62,7 @@ class EmployeeServiceImpl implements EmployeeService {
                     .officeEmail(officeEmail)
                     .personalEmail(employeeRequest.personalEmail())
                     .dateOfBirth(employeeRequest.dateOfBirth())
-                    .dateOfJoining(LocalDate.now())
+                    .dateOfJoining(employeeRequest.dateOfJoining())
                     .designation(employeeRequest.designation())
                     .department(employeeRequest.department())
                     .totalYrExp(employeeRequest.totalYrExp())
@@ -121,12 +121,14 @@ class EmployeeServiceImpl implements EmployeeService {
               .toList();
 
       EmployeeResponse build = EmployeeResponse.builder()
-              .id(e.getId())
+              .employeId(e.getEmployeeId())
               .name(e.getName())
               .totalYrExp((float) e.getTotalYrExp()) // Assuming totalYrExp is Double in Employee
               .primarySkills(primarySkills)
               .secondarySkills(secondarySkills)
               .status(e.getStatus())
+              .designation(e.getDesignation())
+              .department(e.getDepartment())
               .build();
 
       employeeResponseList.add(build);
@@ -300,7 +302,7 @@ class EmployeeServiceImpl implements EmployeeService {
               .toList();
 
       EmployeeResponse build = EmployeeResponse.builder()
-              .id(e.getId())
+              .employeId(e.getEmployeeId())
               .name(e.getName())
               .totalYrExp((float) e.getTotalYrExp()) // Assuming totalYrExp is Double in Employee
               .primarySkills(primarySkills)

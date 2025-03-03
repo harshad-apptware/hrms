@@ -8,11 +8,14 @@ import java.util.List;
 
 @Builder
 public record EmployeeResponse(
-        long id,
+        long employeId,
         String name,
         float totalYrExp,
         List<String> primarySkills,
         List<String> secondarySkills,
-        Employee.EmployeeStatus status
+        Employee.EmployeeStatus status,
+        String designation,
+        Employee.Department department
+
 ) {
 }

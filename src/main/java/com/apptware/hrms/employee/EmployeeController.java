@@ -39,7 +39,7 @@ public class EmployeeController {
             .filter(i -> EmployeeSkill.Proficiency.SECONDARY.equals(i.getProficiency()))
             .map(i -> i.getSkill().getDescription())
             .toList();
-    EmployeeResponse employeeResponse = EmployeeResponse.builder().id(employee.getId()).name(employee.getName()).totalYrExp(employee.getTotalYrExp()).primarySkills(primarySkills).secondarySkills(secondarySkills).status(employee.getStatus()).build();
+    EmployeeResponse employeeResponse = EmployeeResponse.builder().employeId(employee.getId()).name(employee.getName()).totalYrExp(employee.getTotalYrExp()).primarySkills(primarySkills).secondarySkills(secondarySkills).status(employee.getStatus()).build();
     return ResponseEntity.ok(employeeResponse);
   }
 
