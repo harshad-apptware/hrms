@@ -1,6 +1,7 @@
 package com.apptware.hrms.client;
 
 import com.apptware.hrms.model.ClientRequest;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @RestController
 @RequestMapping("/client")
+@Tag(name = "Client APIs", description = "Create, Read & Update Client")
 public class ClientController {
 
   @Autowired

@@ -2,6 +2,7 @@ package com.apptware.hrms.project;
 
 import com.apptware.hrms.model.ProjectRequest;
 import com.apptware.hrms.project.Project.ProjectStatus;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @RestController
 @RequestMapping("/project")
+@Tag(name = "Project APIs", description = "Create, Read & Update Project")
 public class ProjectController {
 
   @Autowired

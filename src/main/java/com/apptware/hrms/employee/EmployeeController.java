@@ -2,6 +2,7 @@ package com.apptware.hrms.employee;
 
 import com.apptware.hrms.model.*;
 import com.apptware.hrms.project.Project;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @RestController
 @RequestMapping("/employee")
+@Tag(name = "Employee APIs", description = "Create, Read & Update Employee")
 public class EmployeeController {
 
   @Autowired EmployeeService employeeService;
