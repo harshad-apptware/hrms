@@ -16,6 +16,10 @@ public record EmployeeRequest(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
         @Column(columnDefinition = "DATE")
         LocalDate dateOfBirth,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+        @Column(columnDefinition = "DATE")
+        LocalDate dateOfJoining,
+        Long employeeId,
         float totalYrExp,
         List<Skill> primarySkills,
         List<Skill> secondarySkills,

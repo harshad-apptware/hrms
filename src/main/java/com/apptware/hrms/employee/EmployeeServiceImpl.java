@@ -67,6 +67,8 @@ class EmployeeServiceImpl implements EmployeeService {
                     .department(employeeRequest.department())
                     .totalYrExp(employeeRequest.totalYrExp())
                     .status(EmployeeStatus.NON_BILLABLE)
+                    .employeeId(employeeRequest.employeeId())
+                    .dateOfJoining(employeeRequest.dateOfJoining())
                     .build();
 
     if (employeeRequest.reportingManager() != null) {
