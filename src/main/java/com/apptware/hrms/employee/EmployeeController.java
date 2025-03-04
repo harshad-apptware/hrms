@@ -105,9 +105,9 @@ public class EmployeeController {
   ResponseEntity<String> saveEmployee(@RequestBody EmployeeRequest employeeRequest) {
     try {
       String saved = employeeService.saveEmployee(employeeRequest);
-      return ResponseEntity.ok(saved);
+      return ResponseEntity.status(HttpStatus.OK).body(saved);
     } catch (IllegalArgumentException ex) {
-      return ResponseEntity.ok(ex.getMessage());
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
   }
 
