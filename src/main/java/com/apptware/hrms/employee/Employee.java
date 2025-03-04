@@ -74,6 +74,7 @@ public class Employee {
     ACCOUNTS,
     MARKETING,
     OPERATIONS,
-    TECHNOLOGY
+    TECHNOLOGY,
+    DELIVERY
   }
 }

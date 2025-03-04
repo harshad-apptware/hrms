@@ -93,7 +93,17 @@ public enum Skill {
     PROCUREMENT("Procurement"),
     INVENTORY_MANAGEMENT("Inventory Management"),
     BUSINESS_PROCESS_IMPROVEMENT("Business Process Improvement"),
-    CHANGE_MANAGEMENT("Change Management");
+    CHANGE_MANAGEMENT("Change Management"),
+
+    // DELIVERY
+    STRATEGIC_THINKING("Strategic Thinking"),
+    CUSTOMER_FOCUS("Customer Focus"),
+    DATA_DRIVEN_DECISION_MAKING("Data-Driven Decision Making"),
+    TECHNICAL_ACUMEN("Technical Acumen"),
+    LEADERSHIP("Leadership"),
+    COMMUNICATION_SKILLS("Communication Skills"),
+    PROBLEM_SOLVING("Problem-Solving"),
+    AGILITY_AND_FLEXIBILITY("Agility and Flexibility");
 
     private final String description;
 

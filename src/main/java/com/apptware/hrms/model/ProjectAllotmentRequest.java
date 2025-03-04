@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 public record ProjectAllotmentRequest(
     long projectId,
-    long employeeId,
+    long id,
     String workLocation,
     double allocationPercent,
     LocalDate projectJoiningDate,

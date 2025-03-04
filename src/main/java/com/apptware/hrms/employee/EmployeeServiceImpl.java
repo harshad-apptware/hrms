@@ -192,7 +192,7 @@ class EmployeeServiceImpl implements EmployeeService {
 
   @Override
   public String allotProjectToEmployee(ProjectAllotmentRequest allotmentRequest) {
-    Optional<Employee> optionalEmployee = employeeRepository.findById(allotmentRequest.employeeId());
+    Optional<Employee> optionalEmployee = employeeRepository.findById(allotmentRequest.id());
     Optional<Project> optionalProject = projectRepository.findById(allotmentRequest.projectId());
 
     if (optionalEmployee.isPresent() && optionalProject.isPresent()) {
