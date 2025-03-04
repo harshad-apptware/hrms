@@ -20,7 +20,7 @@ public class HrmsApplication {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry
 						.addMapping("/**") // Applies to all paths
-						.allowedOrigins("https://employee-registeration-form.vercel.app", "https://hrms-poc-employee-management.vercel.app")
+						.allowedOrigins("https://employee-registeration-form.vercel.app", "https://hrms-poc-employee-management.vercel.app","http://locahost:5173")
 						.allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS")
 						.allowedHeaders("*");
 			}

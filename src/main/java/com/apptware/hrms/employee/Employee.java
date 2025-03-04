@@ -58,7 +58,7 @@ public class Employee {
   @Enumerated(EnumType.STRING)
   private EmployeeStatus status;
 
-  @ManyToOne(cascade = CascadeType.REMOVE)
+  @ManyToOne
   @JoinColumn(name = "reporting_manager_id")
   private Employee reportingManager;
 
