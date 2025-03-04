@@ -11,6 +11,7 @@ import com.apptware.hrms.utils.EmailValidator;
 import java.time.LocalDate;
 import java.util.*;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -318,10 +319,12 @@ class EmployeeServiceImpl implements EmployeeService {
     return employeeResponseList;
   }
 
+  @Transactional
   @Override
   public String deleteEmployee(Long id) {
     Optional<Employee> optionalEmployee = employeeRepository.findById(id);
     if(optionalEmployee.isPresent()){
+      engagementRepository.updateEmployeeEngagement(id);
       employeeRepository.deleteById(id);
       return "Employee deleted";
     }

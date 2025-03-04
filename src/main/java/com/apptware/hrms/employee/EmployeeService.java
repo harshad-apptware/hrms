@@ -4,6 +4,8 @@ import com.apptware.hrms.model.EmployeeRequest;
 import com.apptware.hrms.model.EmployeeResponse;
 import com.apptware.hrms.model.ProjectAllotmentRequest;
 import com.apptware.hrms.project.Project;
+import jakarta.transaction.Transactional;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -33,6 +35,7 @@ public interface EmployeeService {
 
   List<EmployeeResponse> fetchEmployeesBySkills(List<Skill> skill);
 
+  @Transactional
   String deleteEmployee(Long id);
 
   String updateEmployee(Long id, EmployeeRequest employeeRequest);

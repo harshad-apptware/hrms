@@ -2,6 +2,7 @@ package com.apptware.hrms.employee;
 
 import java.time.LocalDate;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -22,4 +23,8 @@ public interface EmployeeEngagementRepository extends JpaRepository<EmployeeEnga
       @Param("employeeId") long employeeId,
       @Param("projectId") long projectId,
       @Param("leavingDate")LocalDate leavingDate);
+
+  @Modifying
+  @Query("UPDATE EmployeeEngagement e SET e.employee = NULL WHERE e.employee.id = :employeeId")
+  void updateEmployeeEngagement(@Param("employeeId") Long employeeId);
 }

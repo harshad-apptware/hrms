@@ -25,7 +25,7 @@ public class EmployeeEngagement {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.REMOVE)
   @JoinColumn(name = "employee_id")
   private Employee employee;
   @ManyToOne

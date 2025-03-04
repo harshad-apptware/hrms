@@ -18,9 +18,11 @@ public class HrmsApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("https://hrms-poc-employee-management.vercel.app/")
+				registry
+						.addMapping("https://employee-registeration-form.vercel.app/")
+//						.addMapping("https://hrms-poc-employee-management.vercel.app/")
 						.allowedOrigins("*")
-						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+						.allowedMethods("GET", "POST","PATCH", "PUT", "DELETE", "OPTIONS")
 						.allowedHeaders("*");
 			}
 		};
