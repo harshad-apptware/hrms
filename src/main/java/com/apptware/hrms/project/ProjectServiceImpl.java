@@ -99,15 +99,20 @@ class ProjectServiceImpl implements ProjectService {
   public String updateProject(Long id, ProjectRequest projectRequest) {
     Optional<Project> optionalProject = projectRepository.findById(id);
     Optional<Client> optionalClient = clientRepository.findById(projectRequest.clientId());
-    if(optionalProject.isPresent() && optionalClient.isPresent()){
-      Project project = optionalProject.get();
-      project.setProjectName(projectRequest.name());
-      project.setClient(optionalClient.get());
-      project.setProjectType(projectRequest.billingType());
-      project.setStartDate(projectRequest.startDate());
-      project.setEndDate(projectRequest.endDate());
-      projectRepository.save(project);
-      return "Project updated";
+    if(optionalProject.isPresent() && optionalClient.isPresent()) {
+      if (optionalProject.get().getClient().getId()== projectRequest.clientId()) {
+        return "Project is already added for this client";
+      }
+      else {
+        Project project = optionalProject.get();
+        project.setProjectName(projectRequest.name());
+        project.setClient(optionalClient.get());
+        project.setProjectType(projectRequest.billingType());
+        project.setStartDate(projectRequest.startDate());
+        project.setEndDate(projectRequest.endDate());
+        projectRepository.save(project);
+        return "Project updated";
+      }
     }
     return "Invalid ProjectId or ClientId";
   }
