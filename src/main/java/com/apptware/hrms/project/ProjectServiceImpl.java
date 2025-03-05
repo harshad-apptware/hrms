@@ -30,12 +30,13 @@ class ProjectServiceImpl implements ProjectService {
               .client(client)
               .projectType(projectRequest.billingType())
               .projectStatus(ProjectStatus.ONGOING)
-              .startDate(LocalDate.now())
+              .startDate(projectRequest.startDate())
+                  .endDate(projectRequest.endDate())
               .build();
       projectRepository.save(newProject);
-      return "Project Added";
+      return "Project added";
     } else {
-      throw new IllegalArgumentException("Invalid Client Id.");
+      return "Invalid Client Id";
     }
   }
 
@@ -86,5 +87,22 @@ class ProjectServiceImpl implements ProjectService {
       return "Project deleted";
     }
     return "Project not found";
+  }
+
+  @Override
+  public String updateProject(Long id, ProjectRequest projectRequest) {
+    Optional<Project> optionalProject = projectRepository.findById(id);
+    Optional<Client> optionalClient = clientRepository.findById(projectRequest.clientId());
+    if(optionalProject.isPresent() && optionalClient.isPresent()){
+      Project project = optionalProject.get();
+      project.setProjectName(projectRequest.name());
+      project.setClient(optionalClient.get());
+      project.setProjectType(projectRequest.billingType());
+      project.setStartDate(projectRequest.startDate());
+      project.setEndDate(projectRequest.endDate());
+      projectRepository.save(project);
+      return "Project updated";
+    }
+    return "Invalid ProjectId or ClientId";
   }
 }

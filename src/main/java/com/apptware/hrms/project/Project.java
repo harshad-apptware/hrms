@@ -33,6 +33,9 @@ public class Project {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
   @Column(columnDefinition = "DATE")
   private LocalDate startDate;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+  @Column(columnDefinition = "DATE")
+  private LocalDate endDate;
   @Enumerated(EnumType.STRING)
   private BillingType projectType;
 

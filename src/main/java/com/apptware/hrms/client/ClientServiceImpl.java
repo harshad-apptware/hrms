@@ -15,6 +15,12 @@ class ClientServiceImpl implements ClientService {
 
   @Override
   public String saveClient(ClientRequest clientRequest) {
+    Optional<Client> byName = clientRepository.findByClientNameIgnoreCase(clientRequest.clientName());
+    Optional<Client> byClientEmail = clientRepository.findByClientEmailIgnoreCase(clientRequest.clientEmail());
+    if(byName.isPresent() && byClientEmail.isPresent()){
+      return "Client already exists";
+    }
+
     Client newClient =
             Client.builder()
                     .clientName(clientRequest.clientName())
@@ -29,8 +35,8 @@ class ClientServiceImpl implements ClientService {
   }
 
   @Override
-  public Client fetchClientByName(String name) {
-    return clientRepository.findByName(name);
+  public Optional<Client> fetchClientByName(String name) {
+    return clientRepository.findByClientNameIgnoreCase(name.toLowerCase());
   }
 
   @Override

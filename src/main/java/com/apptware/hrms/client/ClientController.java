@@ -3,6 +3,8 @@ package com.apptware.hrms.client;
 import com.apptware.hrms.model.ClientRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +25,12 @@ public class ClientController {
   }
 
   @GetMapping("/byName") //need to check if client not present in DB returning noting and 200OK
-  ResponseEntity<Client> getClientByName(@RequestParam String clientName) {
-    Client client = clientService.fetchClientByName(clientName);
-    return ResponseEntity.ok(client);
+  ResponseEntity<?> getClientByName(@RequestParam String clientName) {
+    Optional<Client> optionalClient = clientService.fetchClientByName(clientName);
+    if(optionalClient.isPresent()){
+      return ResponseEntity.status(HttpStatus.OK).body(optionalClient.get());
+    }
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Client not found");
   }
 
   @GetMapping("/listClients")
@@ -37,6 +42,9 @@ public class ClientController {
   @PostMapping("/add")
   ResponseEntity<String> addNewClient(@RequestBody ClientRequest clientRequest) {
     String saved = clientService.saveClient(clientRequest);
+    if (saved.equals("Client already exists")){
+      return ResponseEntity.status(HttpStatus.CONFLICT).body(saved);
+    }
     return ResponseEntity.ok(saved);
   }
 

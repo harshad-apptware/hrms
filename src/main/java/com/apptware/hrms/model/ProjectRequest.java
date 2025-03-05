@@ -4,4 +4,4 @@ import com.apptware.hrms.project.Project.BillingType;
 import java.time.LocalDate;
 
 public record ProjectRequest(
-    String name, long clientId, BillingType billingType) {}
+    String name, long clientId, BillingType billingType, LocalDate startDate, LocalDate endDate) {}
