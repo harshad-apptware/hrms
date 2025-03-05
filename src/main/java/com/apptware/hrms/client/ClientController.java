@@ -19,9 +19,13 @@ public class ClientController {
   ClientService clientService;
 
   @GetMapping("/byId")
-  ResponseEntity<Client> getClientById(@RequestParam long id) {
-    Client client = clientService.fetchClientById(id);
-    return ResponseEntity.ok(client);
+  ResponseEntity<?> getClientById(@RequestParam long id) {
+    Optional<Client> optionalClient = clientService.fetchClientById(id);
+    if (optionalClient.isPresent()) {
+      return ResponseEntity.ok(optionalClient.get());
+    } else {
+      return ResponseEntity.status(HttpStatus.CONFLICT).body("Invalid Client Id.");
+    }
   }
 
   @GetMapping("/byName") //need to check if client not present in DB returning noting and 200OK
@@ -51,7 +55,10 @@ public class ClientController {
   @PutMapping("/update")
   ResponseEntity<String> updateClientDetails(@RequestBody Client client){
     String message = clientService.updateClientDetails(client);
-    return ResponseEntity.status(HttpStatus.ACCEPTED).body(message);
+    if(message.equals("Client updated")){
+      return ResponseEntity.status(HttpStatus.ACCEPTED).body(message);
+    }
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
   }
 
   @DeleteMapping("/delete")

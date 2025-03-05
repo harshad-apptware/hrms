@@ -10,7 +10,7 @@ interface ClientService {
 
   Optional<Client> fetchClientByName(String name);
 
-  Client fetchClientById(long clientId);
+  Optional<Client> fetchClientById(long clientId);
 
   List<Client> fetchAllClients();
 

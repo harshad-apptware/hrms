@@ -40,14 +40,8 @@ class ClientServiceImpl implements ClientService {
   }
 
   @Override
-  public Client fetchClientById(long clientId) {
-    Optional<Client> optionalClient = clientRepository.findById(clientId);
-
-    if (optionalClient.isPresent()) {
-      return optionalClient.get();
-    } else {
-      throw new IllegalArgumentException("Invalid Client Id.");
-    }
+  public Optional<Client> fetchClientById(long clientId) {
+    return clientRepository.findById(clientId);
   }
 
   @Override
@@ -57,15 +51,19 @@ class ClientServiceImpl implements ClientService {
 
   @Override
   public String updateClientDetails(Client client) {
-    Client newClient = fetchClientById(client.getId());
-    newClient.setClientName(client.getClientName());
-    newClient.setClientContact(client.getClientContact());
-    newClient.setAuthorizedSignatory(client.getAuthorizedSignatory());
-    newClient.setClientEmail(client.getClientEmail());
-    newClient.setContactNo(client.getContactNo());
-    newClient.setLocation(client.getLocation());
-    clientRepository.save(newClient);
-    return "Client updated successfully";
+    Optional<Client> optionalClient = fetchClientById(client.getId());
+    if(optionalClient.isPresent()) {
+      Client newClient = optionalClient.get();
+      newClient.setClientName(client.getClientName());
+      newClient.setClientContact(client.getClientContact());
+      newClient.setAuthorizedSignatory(client.getAuthorizedSignatory());
+      newClient.setClientEmail(client.getClientEmail());
+      newClient.setContactNo(client.getContactNo());
+      newClient.setLocation(client.getLocation());
+      clientRepository.save(newClient);
+      return "Client updated";
+    }
+    return "Client does not exists";
   }
 
   @Override
