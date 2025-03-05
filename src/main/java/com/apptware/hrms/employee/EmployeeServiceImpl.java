@@ -2,9 +2,7 @@ package com.apptware.hrms.employee;
 
 import com.apptware.hrms.employee.Employee.EmployeeStatus;
 import com.apptware.hrms.employee.EmployeeEngagement.EngagementStatus;
-import com.apptware.hrms.model.EmployeeRequest;
-import com.apptware.hrms.model.EmployeeResponse;
-import com.apptware.hrms.model.ProjectAllotmentRequest;
+import com.apptware.hrms.model.*;
 import com.apptware.hrms.project.Project;
 import com.apptware.hrms.project.ProjectRepository;
 import com.apptware.hrms.utils.EmailValidator;
@@ -209,8 +207,8 @@ class EmployeeServiceImpl implements EmployeeService {
                       .location(allotmentRequest.workLocation())
                       .build();
 
-      if (Objects.nonNull(allotmentRequest.reportingResource())) {
-        Optional<EmployeeEngagement> optionalShadow = engagementRepository.findById(allotmentRequest.reportingResource());
+      if (Objects.nonNull(allotmentRequest.shadowOf())) {
+        Optional<EmployeeEngagement> optionalShadow = engagementRepository.findById(allotmentRequest.shadowOf());
         if (optionalShadow.isPresent()) {
           EmployeeEngagement reportingResource = optionalShadow.get();
           employeeEngagement.setShadowOf(reportingResource);
@@ -426,6 +424,52 @@ class EmployeeServiceImpl implements EmployeeService {
       return "Employee Updated";
     }
     return "Employee does not exists";
+  }
+
+  public EmployeeEngagementResponse fetchEmployeeEngagement(long employeeId) {
+    // Fetch all engagements for the employee
+    List<EmployeeEngagement> engagements = engagementRepository.findByEmployeeId(employeeId);
+
+    if (engagements.isEmpty()) {
+      return null; // Or throw an exception if no engagements are found
+    }
+
+    // Assuming we're interested in the first engagement for simplicity
+    EmployeeEngagement engagement = engagements.get(0);
+
+    // Fetch shadows for this engagement
+    List<EmployeeEngagement> shadowsEngagements = engagementRepository.findByShadowOfId(employeeId);
+
+    List<ShadowEngagementResponse> listOfShadows = new ArrayList<>();
+    for (EmployeeEngagement shadowEngagement : shadowsEngagements) {
+      Employee shadowEmployee = employeeRepository.findById(shadowEngagement.getEmployee().getId()).orElse(null);
+      Project shadowProject = projectRepository.findById(shadowEngagement.getProject().getId()).orElse(null);
+
+      if (shadowEmployee != null && shadowProject != null) {
+        ShadowEngagementResponse shadowResponse = new ShadowEngagementResponse(
+                shadowEmployee.getId(),
+                shadowEmployee.getName(),
+                shadowProject.getProjectName(),
+                String.format("%.0f%%", shadowEngagement.getAllocationPercent())
+        );
+        listOfShadows.add(shadowResponse);
+      }
+    }
+
+    Employee employee = employeeRepository.findById(engagement.getEmployee().getId()).orElse(null);
+
+    if (employee != null) {
+      EmployeeEngagementResponse response = new EmployeeEngagementResponse(
+              engagement.getId(),
+              employee.getId(),
+              employee.getName(),
+              engagement.getEngagementStatus().toString(),
+              listOfShadows
+      );
+      return response;
+    } else {
+      return null; // Or throw an exception if employee is not found
+    }
   }
 
   // Method to clear the cache (e.g., on employee updates)

@@ -1,5 +1,6 @@
 package com.apptware.hrms.employee;
 
+import com.apptware.hrms.model.EmployeeEngagementResponse;
 import com.apptware.hrms.model.EmployeeRequest;
 import com.apptware.hrms.model.EmployeeResponse;
 import com.apptware.hrms.model.ProjectAllotmentRequest;
@@ -39,4 +40,6 @@ public interface EmployeeService {
   String deleteEmployee(Long id);
 
   String updateEmployee(Long id, EmployeeRequest employeeRequest);
+
+  EmployeeEngagementResponse fetchEmployeeEngagement(long employeeId);
 }

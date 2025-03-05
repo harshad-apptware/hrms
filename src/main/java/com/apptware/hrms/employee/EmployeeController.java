@@ -151,4 +151,10 @@ public class EmployeeController {
     }
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee doest not exists");
   }
+
+  @GetMapping("/engagement/{employeeId}")
+  public ResponseEntity<EmployeeEngagementResponse> getEmployeeEngagement(@PathVariable long employeeId) {
+    EmployeeEngagementResponse response = employeeService.fetchEmployeeEngagement(employeeId);
+    return ResponseEntity.ok(response);
+  }
 }

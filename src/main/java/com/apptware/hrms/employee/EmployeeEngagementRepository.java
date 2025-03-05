@@ -1,6 +1,7 @@
 package com.apptware.hrms.employee;
 
 import java.time.LocalDate;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -27,4 +28,10 @@ public interface EmployeeEngagementRepository extends JpaRepository<EmployeeEnga
   @Modifying
   @Query("UPDATE EmployeeEngagement e SET e.employee = NULL WHERE e.employee.id = :employeeId")
   void updateEmployeeEngagement(@Param("employeeId") Long employeeId);
+
+  List<EmployeeEngagement> findByEmployeeId(long employeeId);
+
+  @Query("SELECT ee FROM EmployeeEngagement ee WHERE ee.shadowOf.id = :shadowOfId")
+  List<EmployeeEngagement> findByShadowOfId(@Param("shadowOfId") Long shadowOfId);
+
 }

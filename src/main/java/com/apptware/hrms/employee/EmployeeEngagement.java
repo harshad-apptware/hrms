@@ -24,7 +24,7 @@ public class EmployeeEngagement {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private Long id;
   @ManyToOne
   @JoinColumn(name = "employee_id")
   private Employee employee;
