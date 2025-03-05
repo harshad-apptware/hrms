@@ -80,6 +80,7 @@ class EmployeeServiceImpl implements EmployeeService {
       newEmployee.setReportingManager(reportingManager.get());
     }
 
+
     List<EmployeeSkill> skills = new ArrayList<>();
 
     for (String skillDescription : employeeRequest.primarySkills()) {
@@ -335,7 +336,8 @@ class EmployeeServiceImpl implements EmployeeService {
   public String updateEmployee(Long id, EmployeeRequest employeeRequest) {
     Optional<Employee> optionalEmployee = employeeRepository.findById(id);
     Optional<Employee> optionalReportingManager = employeeRepository.findById(employeeRequest.reportingManager());
-    if(optionalEmployee.isPresent() && optionalReportingManager.isPresent()){
+
+    if (optionalEmployee.isPresent() && optionalReportingManager.isPresent()) {
       Employee employee = optionalEmployee.get();
       employee.setName(employeeRequest.name());
       employee.setContactNo(employeeRequest.contactNumber());
@@ -349,32 +351,82 @@ class EmployeeServiceImpl implements EmployeeService {
       employee.setDepartment(employeeRequest.department());
       employee.setReportingManager(optionalReportingManager.get());
 
-      List<EmployeeSkill> skills = new ArrayList<>();
+      // Update existing skills
+      if (employee.getSkills() != null && !employee.getSkills().isEmpty()) {
+        Map<String, EmployeeSkill> existingSkills = new HashMap<>();
+        for (EmployeeSkill skill : employee.getSkills()) {
+          existingSkills.put(skill.getSkill().getDescription(), skill);
+        }
 
-      for (String skillDescription : employeeRequest.primarySkills()) {
-        Skill skill = Skill.fromDescription(skillDescription);
-        skills.add(EmployeeSkill.builder()
-                .employee(employee)
-                .skill(skill)
-                .proficiency(EmployeeSkill.Proficiency.PRIMARY)
-                .build());
-      }
+        List<EmployeeSkill> skillsToRemove = new ArrayList<>();
+        List<EmployeeSkill> skillsToAdd = new ArrayList<>();
 
-      for (String skillDescription : employeeRequest.secondarySkills()) {
-        Skill skill = Skill.fromDescription(skillDescription);
-        skills.add(EmployeeSkill.builder()
-                .employee(employee)
-                .skill(skill)
-                .proficiency(EmployeeSkill.Proficiency.SECONDARY)
-                .build());
+        for (String skillDescription : employeeRequest.primarySkills()) {
+          Skill skill = Skill.fromDescription(skillDescription);
+          if (existingSkills.containsKey(skillDescription)) {
+            existingSkills.get(skillDescription).setProficiency(EmployeeSkill.Proficiency.PRIMARY);
+          } else {
+            skillsToAdd.add(EmployeeSkill.builder()
+                    .employee(employee)
+                    .skill(skill)
+                    .proficiency(EmployeeSkill.Proficiency.PRIMARY)
+                    .build());
+          }
+        }
+
+        for (String skillDescription : employeeRequest.secondarySkills()) {
+          Skill skill = Skill.fromDescription(skillDescription);
+          if (existingSkills.containsKey(skillDescription)) {
+            existingSkills.get(skillDescription).setProficiency(EmployeeSkill.Proficiency.SECONDARY);
+          } else {
+            skillsToAdd.add(EmployeeSkill.builder()
+                    .employee(employee)
+                    .skill(skill)
+                    .proficiency(EmployeeSkill.Proficiency.SECONDARY)
+                    .build());
+          }
+        }
+
+        // Remove skills that are not in the new list
+        for (EmployeeSkill skill : existingSkills.values()) {
+          if (!employeeRequest.primarySkills().contains(skill.getSkill().getDescription()) &&
+                  !employeeRequest.secondarySkills().contains(skill.getSkill().getDescription())) {
+            skillsToRemove.add(skill);
+          }
+        }
+
+        // Remove skills from the employee
+        employee.getSkills().removeAll(skillsToRemove);
+
+        // Add new skills to the employee
+        employee.getSkills().addAll(skillsToAdd);
+      } else {
+        List<EmployeeSkill> skills = new ArrayList<>();
+
+        for (String skillDescription : employeeRequest.primarySkills()) {
+          Skill skill = Skill.fromDescription(skillDescription);
+          skills.add(EmployeeSkill.builder()
+                  .employee(employee)
+                  .skill(skill)
+                  .proficiency(EmployeeSkill.Proficiency.PRIMARY)
+                  .build());
+        }
+
+        for (String skillDescription : employeeRequest.secondarySkills()) {
+          Skill skill = Skill.fromDescription(skillDescription);
+          skills.add(EmployeeSkill.builder()
+                  .employee(employee)
+                  .skill(skill)
+                  .proficiency(EmployeeSkill.Proficiency.SECONDARY)
+                  .build());
+        }
+        employee.setSkills(skills);
       }
-      employee.setSkills(skills);
       employeeRepository.save(employee);
       return "Employee Updated";
     }
     return "Employee does not exists";
   }
-
 
   // Method to clear the cache (e.g., on employee updates)
   // Run Every 10 Days

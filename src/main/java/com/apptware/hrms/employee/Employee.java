@@ -32,21 +32,18 @@ public class Employee {
   private String officeEmail;
   private String personalEmail;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
   @Column(columnDefinition = "DATE")
   private LocalDate dateOfBirth;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
   @Column(columnDefinition = "DATE")
   private LocalDate dateOfJoining;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
   @Column(columnDefinition = "DATE")
   private LocalDate dateOfLeaving;
 
   private float totalYrExp;
 
-  @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonManagedReference
   private List<EmployeeSkill> skills;
 

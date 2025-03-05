@@ -30,10 +30,8 @@ public class Project {
   @Enumerated(EnumType.STRING)
   private ProjectStatus projectStatus;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
   @Column(columnDefinition = "DATE")
   private LocalDate startDate;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
   @Column(columnDefinition = "DATE")
   private LocalDate endDate;
   @Enumerated(EnumType.STRING)

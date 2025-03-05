@@ -24,7 +24,10 @@ class ProjectServiceImpl implements ProjectService {
     Optional<Project> optionalProject = projectRepository.findByProjectNameIgnoreCase(projectRequest.name());
 
     if (optionalClient.isPresent()) {
-      if(optionalProject.isPresent() && !optionalProject.get().getClient().equals(optionalClient.get())) {
+      if(optionalProject.isPresent() && optionalProject.get().getClient().equals(optionalClient.get())) {
+        return "Project is already added for this client";
+      }
+      else{
         Client client = optionalClient.get();
         Project newProject =
                 Project.builder()
@@ -37,9 +40,6 @@ class ProjectServiceImpl implements ProjectService {
                         .build();
         projectRepository.save(newProject);
         return "Project added";
-      }
-      else {
-        return "Project is already added for this client";
       }
     } else {
       return "Invalid Client Id";
