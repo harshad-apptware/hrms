@@ -21,20 +21,26 @@ class ProjectServiceImpl implements ProjectService {
   public String saveProject(ProjectRequest projectRequest) {
 
     Optional<Client> optionalClient = clientRepository.findById(projectRequest.clientId());
+    Optional<Project> optionalProject = projectRepository.findByProjectNameIgnoreCase(projectRequest.name());
 
     if (optionalClient.isPresent()) {
-      Client client = optionalClient.get();
-      Project newProject =
-          Project.builder()
-              .projectName(projectRequest.name())
-              .client(client)
-              .projectType(projectRequest.billingType())
-              .projectStatus(ProjectStatus.ONGOING)
-              .startDate(projectRequest.startDate())
-                  .endDate(projectRequest.endDate())
-              .build();
-      projectRepository.save(newProject);
-      return "Project added";
+      if(optionalProject.isPresent() && !optionalProject.get().getClient().equals(optionalClient.get())) {
+        Client client = optionalClient.get();
+        Project newProject =
+                Project.builder()
+                        .projectName(projectRequest.name())
+                        .client(client)
+                        .projectType(projectRequest.billingType())
+                        .projectStatus(ProjectStatus.ONGOING)
+                        .startDate(projectRequest.startDate())
+                        .endDate(projectRequest.endDate())
+                        .build();
+        projectRepository.save(newProject);
+        return "Project added";
+      }
+      else {
+        return "Project is already added for this client";
+      }
     } else {
       return "Invalid Client Id";
     }

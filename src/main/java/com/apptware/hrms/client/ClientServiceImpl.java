@@ -17,7 +17,7 @@ class ClientServiceImpl implements ClientService {
   public String saveClient(ClientRequest clientRequest) {
     Optional<Client> byName = clientRepository.findByClientNameIgnoreCase(clientRequest.clientName());
     Optional<Client> byClientEmail = clientRepository.findByClientEmailIgnoreCase(clientRequest.clientEmail());
-    if(byName.isPresent() && byClientEmail.isPresent()){
+    if(byName.isPresent() || byClientEmail.isPresent()){
       return "Client already exists";
     }
 
